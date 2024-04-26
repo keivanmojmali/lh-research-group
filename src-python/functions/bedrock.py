@@ -2,13 +2,14 @@
 
 import boto3
 import json
+import os
 
 # Create a Bedrock Runtime client in the AWS Region of your choice.
 client = boto3.client(
     "bedrock-runtime",
-    region_name="us-east-1",
-    aws_access_key_id="AKIAZQ3DTFQUHHQKBUVD",
-    aws_secret_access_key="tjPyCCe1ax+h4T/qHypvLG/Pd8bEPNRY3mBbIW0m",
+    region_name=os.environ.get("AWS_REGION"),
+    aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID"),
+    aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY"),
 )
 
 # Set the model ID, e.g., Llama 3 8B Instruct.
