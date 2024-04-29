@@ -1,9 +1,10 @@
 import AppLayout from '@/components/appLayout';
+import StackedLayout from '@/components/stackedLayout';
 
 export default function AssessmentCreator() {
     return (
         <AppLayout>
-            <h1>Assessment Creator</h1>
+            <StackedLayout />
         </AppLayout>
     )
 
