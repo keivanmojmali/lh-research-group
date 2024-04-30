@@ -13,11 +13,16 @@ interface Option {
 
 export default function AssessmentCreator() {
     const [passage, setPassage] = useState('');
-    const [typeOfQuestion, setTypeOfQuestion] = useState('');
-    const [typeOfAssessment, setTypeOfAssessment] = useState('');
+    const [typeOfQuestion, setTypeOfQuestion] = useState('Multiple choice');
+    const [typeOfAssessment, setTypeOfAssessment] = useState('Class quiz');
     const [numberOfQuestions, setNumberOfQuestions] = useState('');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState('');  // State to store the result
+
+    console.log('passage', passage)
+    console.log('typeOfQuestion', typeOfQuestion)
+    console.log('typeOfAssessment', typeOfAssessment)
+    console.log('numberOfQuestions', numberOfQuestions)
 
     // Define the options for type of question
     const questionOptions: Option[] = [
@@ -40,10 +45,11 @@ export default function AssessmentCreator() {
             typeOfQuestion,
             typeOfAssessment,
             numberOfQuestions,
+            size: "8b" //being manually set for now to 8b
         };
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/create_assessment_ela`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/create_assessment_ela`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -84,9 +90,8 @@ export default function AssessmentCreator() {
                 </div>
                 <div className="mt-6 bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
                     {!loading && result && (
-                        <div className="mt-4 p-4 bg-gray-100 border rounded">
-                            <h3 className="text-lg font-bold">Result:</h3>
-                            <p>{result}</p>
+                        <div className="mt-4 p-4 bg-gray-100 border rounded mb-4">
+                            <Textarea title="Result" name="result" value={result} onChange={setResult} instructions={""} />
                         </div>
                     )}
                     {!loading &&

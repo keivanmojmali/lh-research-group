@@ -11,7 +11,7 @@ interface TextareaProps {
 }
 
 // Redefine your component to accept a single props object of type TextareaProps
-const Textarea: React.FC<TextareaProps> = ({ name, onChange, instructions, title, value = "" }) => {
+const Textarea: React.FC<TextareaProps> = ({ name, onChange, instructions = "", title, value = "" }) => {
 
     const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         onChange(event.target.value);
