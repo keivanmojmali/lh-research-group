@@ -1,8 +1,10 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Disclosure } from '@headlessui/react'
 import { ChevronDownIcon, ChevronUpIcon, ChevronLeftIcon, } from '@heroicons/react/24/outline'
 import { ResizableBox } from 'react-resizable';
+import mammoth from 'mammoth';
+
 import Tree, { TreeProps } from 'rc-tree';
 import 'rc-tree/assets/index.css';
 import 'react-resizable/css/styles.css';
@@ -83,21 +85,34 @@ const HelloBanner: React.FC = () => {
 const LessonExtractor: React.FC = () => {
     const [navigation, setNavigation] = useState(initialNavigation);
 
-    const isPlanner = navigation.find(nav => nav.name === "Planner" && nav.current);
-
-    // State to manage the selected file view
     const [selectedFile, setSelectedFile] = useState<string | null>(null);
+    const [fileContent, setFileContent] = useState<string | null>(null);
 
-    // Handler to manage file selection
     const handleFileSelect = (keys: string[], event: any) => {
         const selectedNode = event.node;
         if (selectedNode && selectedNode.isLeaf) {
+            const fileName = selectedNode.title + ".docx"; // Modify according to your naming
             setSelectedFile(selectedNode.title);
+            loadDocxFile(`/docs/${fileName}`);
         }
     };
 
-    // Handler for the back arrow
-    const goBackToTree = () => setSelectedFile(null);
+    const loadDocxFile = async (filePath: string) => {
+        try {
+            const response = await fetch(filePath);
+            const arrayBuffer = await response.arrayBuffer();
+            const result = await mammoth.convertToHtml({ arrayBuffer });
+            setFileContent(result.value);
+        } catch (error) {
+            setFileContent("Unable to load file content.");
+        }
+    };
+
+    const goBackToTree = () => {
+        setSelectedFile(null);
+        setFileContent(null);
+    };
+
 
     const curriculumTreeData: TreeNode[] = [
         {
@@ -188,7 +203,8 @@ const LessonExtractor: React.FC = () => {
                                     </button>
                                     <h2 className="font-bold text-lg">{selectedFile}</h2>
                                 </div>
-                                {/* Additional content for the selected file goes here */}
+                                {/* Display loaded DOCX file content */}
+                                <div dangerouslySetInnerHTML={{ __html: fileContent ?? "Loading..." }} />
                             </>
                         ) : (
                             <>
