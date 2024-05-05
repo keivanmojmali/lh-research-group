@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "rc-tree": "^5.8.5",
     "react-resizable": "^3.0.5"
   }
 }

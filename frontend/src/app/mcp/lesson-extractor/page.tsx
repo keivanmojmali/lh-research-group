@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { Disclosure } from '@headlessui/react'
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline'
 import { ResizableBox } from 'react-resizable';
+import Tree, { TreeProps } from 'rc-tree';
+import 'rc-tree/assets/index.css';
 import 'react-resizable/css/styles.css';
 
 // Navigation item type
@@ -11,11 +13,19 @@ type NavItem = {
     current: boolean
 }
 
+interface TreeNode {
+    title: string;
+    key: string;
+    children?: TreeNode[];
+}
+
+
 // Initialize the navigation items
 const initialNavigation: NavItem[] = [
     { name: 'Planner', current: true },
     { name: 'How-To', current: false },
 ];
+
 
 // Utility function to apply classes conditionally
 function classNames(...classes: string[]) {
@@ -82,6 +92,38 @@ const LessonExtractor: React.FC = () => {
 
     const isPlanner = navigation.find(nav => nav.name === "Planner" && nav.current);
 
+    const curriculumTreeData: TreeNode[] = [
+        {
+            title: 'Engage NY',
+            key: '0',
+            children: [
+                {
+                    title: 'ELA',
+                    key: '0-0',
+                    children: [
+                        {
+                            title: 'Grade 3',
+                            key: '0-0-0',
+                            children: [
+                                {
+                                    title: 'Unit 1',
+                                    key: '0-0-0-0',
+                                    children: [
+                                        { title: 'Lesson 1: Exploring Texts', key: '0-0-0-0-0' },
+                                        { title: 'Lesson 2: Building Vocabulary', key: '0-0-0-0-1' },
+                                        { title: 'Lesson 3: Reading and Discussion', key: '0-0-0-0-2' }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ];
+
+
+
     return (
         <div className="h-screen flex flex-col">
             <div id='navbar'><Navbar navigation={navigation} setNavigation={setNavigation} /></div>
@@ -102,7 +144,8 @@ const LessonExtractor: React.FC = () => {
                     )}
                 </Disclosure>
             </div>
-            <div id='main-content' className="w-full px-2 sm:px-6 lg:px-8 flex-1  flex overflow-hidden">
+            <div id='main-content' className="w-full px-2 sm:px-6 lg:px-8 flex-1 mt-6 flex overflow-hidden">
+                {/* Left Column */}
                 <ResizableBox
                     width={400}
                     height={Infinity}
@@ -111,16 +154,23 @@ const LessonExtractor: React.FC = () => {
                     axis="x"
                 >
                     <div className="h-full w-full bg-gray-100 p-4 border-r border-gray-300 rounded-l-md">
-                        <h2 className="font-bold text-lg">Planner - Left Column</h2>
-                        <p>Adjust the width by dragging the handle.</p>
+                        <h2 className="font-bold text-lg">Planner - Curriculum File Tree</h2>
+                        <Tree
+                            className="mt-2"
+                            defaultExpandAll
+                            treeData={curriculumTreeData}
+                        />
+
                     </div>
                 </ResizableBox>
 
+                {/* Right Column */}
                 <div className="flex-1 h-full bg-gray-100 p-4 border-l border-gray-300 rounded-r-md">
                     <h2 className="font-bold text-lg">Planner - Right Column</h2>
                     <p>This column will also resize based on the handle movement.</p>
                 </div>
             </div>
+
 
             <div id='footer'></div>
         </div>
