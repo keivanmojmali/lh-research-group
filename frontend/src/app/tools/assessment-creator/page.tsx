@@ -33,7 +33,7 @@ export default function AssessmentCreator() {
     // Define the options for type of assessment
     const assessmentOptions: Option[] = [
         { id: '1', name: 'Class quiz' },
-        { id: '2', name: 'Exam ticket' }
+        { id: '2', name: 'Exit ticket' }
     ];
 
     const handleSubmit = async (event: React.FormEvent) => {

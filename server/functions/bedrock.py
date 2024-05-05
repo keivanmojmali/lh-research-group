@@ -26,6 +26,7 @@ client = boto3.client(
 
 def streaming_llama3_call(size, messages):
 
+    print("messages:", messages)
     # models from aws bedrock
     model = {
         "8b": "meta.llama3-8b-instruct-v1:0",
@@ -45,10 +46,13 @@ def streaming_llama3_call(size, messages):
     tokenizer = AutoTokenizer.from_pretrained(
         model_tokenizer[size], token=hugging_face_token
     )
+
     # Apply the chat template to the messages.
     prompt = tokenizer.apply_chat_template(
         messages, tokenize=False, add_generation_prompt=True
     )
+
+    print("Prompt:", prompt)
 
     # Format the request payload using the model's native structure.
     request = {
@@ -58,6 +62,8 @@ def streaming_llama3_call(size, messages):
         "temperature": 0.7,
         "top_p": 0.9,
     }
+
+    print("Request:", request)
 
     # Encode and send the request.
     response_stream = client.invoke_model_with_response_stream(
@@ -69,3 +75,58 @@ def streaming_llama3_call(size, messages):
         chunk = json.loads(event["chunk"]["bytes"])
         if "generation" in chunk:
             yield chunk["generation"]
+
+
+#### I am not sure if this one works i havnt tested it
+def llama3_call(size, messages):
+
+    # models from aws bedrock
+    model = {
+        "8b": "meta.llama3-8b-instruct-v1:0",
+        "70b": "meta.llama3-12b-v1:0",
+    }
+
+    # tokenizers from huggingface
+    model_tokenizer = {
+        "8b": "meta-llama/Meta-Llama-3-8B-Instruct",
+        "70b": "meta-llama/Meta-Llama-3-70B-Instruct",
+    }
+
+    # Set the model ID, e.g., Llama 3 8B Instruct.
+    model_id = model[size]
+
+    # load the tokenizer
+    tokenizer = AutoTokenizer.from_pretrained(
+        model_tokenizer[size], token=hugging_face_token
+    )
+
+    # Apply the chat template to the messages.
+    prompt = tokenizer.apply_chat_template(
+        messages, tokenize=False, add_generation_prompt=True
+    )
+
+    print("Prompt:", prompt)
+
+    # Format the request payload using the model's native structure.
+    request = {
+        "prompt": prompt,
+        # Optional inference parameters:
+        "max_gen_len": 1000,
+        "temperature": 0.7,
+        "top_p": 0.9,
+    }
+
+    print("Request:", request)
+
+    # Encode and send the request.
+    response = client.invoke_model(
+        body=json.dumps(request),
+        modelId=model_id,
+    )
+
+    response_body = json.loads(response.get("body").read())
+
+    # The response from the model now mapped to the answer
+    answer = response_body.get("completions")[0].get("data").get("text")
+
+    return {"statusCode": 200, "body": json.dumps({"Answer": answer})}

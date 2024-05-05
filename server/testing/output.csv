@@ -1,0 +1,2 @@
+Question Number,Generated Question,BERTScore,ROUGE Score
+1,*,-0.4763667583465576,"{""rouge-1"": {""r"": 0.0, ""p"": 0.0, ""f"": 0.0}, ""rouge-2"": {""r"": 0.0, ""p"": 0.0, ""f"": 0.0}, ""rouge-l"": {""r"": 0.0, ""p"": 0.0, ""f"": 0.0}}"
