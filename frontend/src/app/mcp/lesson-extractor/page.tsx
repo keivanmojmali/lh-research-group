@@ -1,8 +1,9 @@
 'use client';
 import React, { useState } from 'react';
-import { Fragment } from 'react'
 import { Disclosure } from '@headlessui/react'
-import { ChevronDownIcon, ChevronUpIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline'
+import { ResizableBox } from 'react-resizable';
+import 'react-resizable/css/styles.css';
 
 // Navigation item type
 type NavItem = {
@@ -21,6 +22,7 @@ function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ');
 }
 
+// Navbar Component
 function Navbar({ navigation, setNavigation }: { navigation: NavItem[], setNavigation: (items: NavItem[]) => void }) {
     return (
         <Disclosure as="nav" className="bg-gray-800">
@@ -28,17 +30,6 @@ function Navbar({ navigation, setNavigation }: { navigation: NavItem[], setNavig
                 <>
                     <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
                         <div className="relative flex h-16 items-center justify-between">
-                            <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-                                {/* Mobile menu button */}
-                                <Disclosure.Button className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
-                                    <span className="sr-only">Open main menu</span>
-                                    {open ? (
-                                        <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
-                                    ) : (
-                                        <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
-                                    )}
-                                </Disclosure.Button>
-                            </div>
                             <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                                 <div className="flex flex-col flex-shrink-0 items-center justify-center">
                                     <h1 className="text-white font-bold text-xl">Lesson Extractor</h1>
@@ -49,7 +40,6 @@ function Navbar({ navigation, setNavigation }: { navigation: NavItem[], setNavig
                                             <a
                                                 key={item.name}
                                                 onClick={() => {
-                                                    // Update the navigation items to reflect the current page
                                                     const updatedNavigation = navigation.map((navItem, navIndex) => ({
                                                         ...navItem,
                                                         current: navIndex === index
@@ -68,40 +58,15 @@ function Navbar({ navigation, setNavigation }: { navigation: NavItem[], setNavig
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
-
-                    <Disclosure.Panel className="sm:hidden">
-                        <div className="space-y-1 px-2 pb-3 pt-2">
-                            {navigation.map((item, index) => (
-                                <Disclosure.Button
-                                    key={item.name}
-                                    onClick={() => {
-                                        // Update the navigation items to reflect the current page for mobile
-                                        const updatedNavigation = navigation.map((navItem, navIndex) => ({
-                                            ...navItem,
-                                            current: navIndex === index
-                                        }));
-                                        setNavigation(updatedNavigation);
-                                    }}
-                                    className={classNames(
-                                        item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                                        'block rounded-md px-3 py-2 text-base font-medium'
-                                    )}
-                                    aria-current={item.current ? 'page' : undefined}
-                                >
-                                    {item.name}
-                                </Disclosure.Button>
-                            ))}
-                        </div>
-                    </Disclosure.Panel>
                 </>
             )}
         </Disclosure>
     );
 }
 
+// Banner Component
 const HelloBanner: React.FC = () => {
     return (
         <div className="bg-blue-600 text-white mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 py-6">
@@ -111,11 +76,14 @@ const HelloBanner: React.FC = () => {
     );
 };
 
+// Lesson Extractor Component
 const LessonExtractor: React.FC = () => {
     const [navigation, setNavigation] = useState(initialNavigation);
 
+    const isPlanner = navigation.find(nav => nav.name === "Planner" && nav.current);
+
     return (
-        <div>
+        <div className="h-screen flex flex-col">
             <div id='navbar'><Navbar navigation={navigation} setNavigation={setNavigation} /></div>
             <div id='banner'>
                 <Disclosure>
@@ -134,10 +102,26 @@ const LessonExtractor: React.FC = () => {
                     )}
                 </Disclosure>
             </div>
-            <div id='main'>
-                {/* The main content will vary based on the current page */}
-                {navigation.find(nav => nav.current)?.name}
+            <div id='main-content' className="w-full px-2 sm:px-6 lg:px-8 flex-1  flex overflow-hidden">
+                <ResizableBox
+                    width={400}
+                    height={Infinity}
+                    minConstraints={[200, 0]}
+                    maxConstraints={[600, Infinity]}
+                    axis="x"
+                >
+                    <div className="h-full w-full bg-gray-100 p-4 border-r border-gray-300 rounded-l-md">
+                        <h2 className="font-bold text-lg">Planner - Left Column</h2>
+                        <p>Adjust the width by dragging the handle.</p>
+                    </div>
+                </ResizableBox>
+
+                <div className="flex-1 h-full bg-gray-100 p-4 border-l border-gray-300 rounded-r-md">
+                    <h2 className="font-bold text-lg">Planner - Right Column</h2>
+                    <p>This column will also resize based on the handle movement.</p>
+                </div>
             </div>
+
             <div id='footer'></div>
         </div>
     );
