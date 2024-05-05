@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { Disclosure } from '@headlessui/react'
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline'
+import { ChevronDownIcon, ChevronUpIcon, ChevronLeftIcon, } from '@heroicons/react/24/outline'
 import { ResizableBox } from 'react-resizable';
 import Tree, { TreeProps } from 'rc-tree';
 import 'rc-tree/assets/index.css';
@@ -19,20 +19,15 @@ interface TreeNode {
     children?: TreeNode[];
 }
 
-
-// Initialize the navigation items
 const initialNavigation: NavItem[] = [
     { name: 'Planner', current: true },
     { name: 'How-To', current: false },
 ];
 
-
-// Utility function to apply classes conditionally
 function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ');
 }
 
-// Navbar Component
 function Navbar({ navigation, setNavigation }: { navigation: NavItem[], setNavigation: (items: NavItem[]) => void }) {
     return (
         <Disclosure as="nav" className="bg-gray-800">
@@ -76,7 +71,6 @@ function Navbar({ navigation, setNavigation }: { navigation: NavItem[], setNavig
     );
 }
 
-// Banner Component
 const HelloBanner: React.FC = () => {
     return (
         <div className="bg-blue-600 text-white mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 py-6">
@@ -86,11 +80,24 @@ const HelloBanner: React.FC = () => {
     );
 };
 
-// Lesson Extractor Component
 const LessonExtractor: React.FC = () => {
     const [navigation, setNavigation] = useState(initialNavigation);
 
     const isPlanner = navigation.find(nav => nav.name === "Planner" && nav.current);
+
+    // State to manage the selected file view
+    const [selectedFile, setSelectedFile] = useState<string | null>(null);
+
+    // Handler to manage file selection
+    const handleFileSelect = (keys: string[], event: any) => {
+        const selectedNode = event.node;
+        if (selectedNode && selectedNode.isLeaf) {
+            setSelectedFile(selectedNode.title);
+        }
+    };
+
+    // Handler for the back arrow
+    const goBackToTree = () => setSelectedFile(null);
 
     const curriculumTreeData: TreeNode[] = [
         {
@@ -99,19 +106,32 @@ const LessonExtractor: React.FC = () => {
             children: [
                 {
                     title: 'ELA',
-                    key: '0-0',
+                    key: '0-1',
                     children: [
                         {
-                            title: 'Grade 3',
-                            key: '0-0-0',
+                            title: 'Grade 1',
+                            key: '0-1-1',
                             children: [
                                 {
-                                    title: 'Unit 1',
-                                    key: '0-0-0-0',
+                                    title: 'Listening and Learning',
+                                    key: '0-1-1-0',
                                     children: [
-                                        { title: 'Lesson 1: Exploring Texts', key: '0-0-0-0-0' },
-                                        { title: 'Lesson 2: Building Vocabulary', key: '0-0-0-0-1' },
-                                        { title: 'Lesson 3: Reading and Discussion', key: '0-0-0-0-2' }
+                                        {
+                                            title: 'CKLA-CCSS-G1-Unit-By-Unit-Alignment',
+                                            key: '0-1-1-0-0',
+                                            isLeaf: true
+                                        }
+                                    ]
+                                },
+                                {
+                                    title: 'Skills',
+                                    key: '0-1-1-1',
+                                    children: [
+                                        {
+                                            title: 'CKLA-CCSS-G1-Unit-By-Unit-Alignment',
+                                            key: '0-1-1-1-0',
+                                            isLeaf: true
+                                        }
                                     ]
                                 }
                             ]
@@ -122,7 +142,12 @@ const LessonExtractor: React.FC = () => {
         }
     ];
 
-
+    const treeProps: TreeProps = {
+        className: "mt-2",
+        defaultExpandAll: true,
+        treeData: curriculumTreeData,
+        onSelect: handleFileSelect
+    };
 
     return (
         <div className="h-screen flex flex-col">
@@ -144,6 +169,7 @@ const LessonExtractor: React.FC = () => {
                     )}
                 </Disclosure>
             </div>
+
             <div id='main-content' className="w-full px-2 sm:px-6 lg:px-8 flex-1 mt-6 flex overflow-hidden">
                 {/* Left Column */}
                 <ResizableBox
@@ -153,14 +179,23 @@ const LessonExtractor: React.FC = () => {
                     maxConstraints={[600, Infinity]}
                     axis="x"
                 >
-                    <div className="h-full w-full bg-gray-100 p-4 border-r border-gray-300 rounded-l-md">
-                        <h2 className="font-bold text-lg">Planner - Curriculum File Tree</h2>
-                        <Tree
-                            className="mt-2"
-                            defaultExpandAll
-                            treeData={curriculumTreeData}
-                        />
-
+                    <div className="h-full w-full bg-gray-100 p-4 border-r border-gray-300 rounded-l-md overflow-auto">
+                        {selectedFile ? (
+                            <>
+                                <div className="flex items-center">
+                                    <button onClick={goBackToTree} className="mr-2">
+                                        <ChevronLeftIcon className="h-5 w-5" />
+                                    </button>
+                                    <h2 className="font-bold text-lg">{selectedFile}</h2>
+                                </div>
+                                {/* Additional content for the selected file goes here */}
+                            </>
+                        ) : (
+                            <>
+                                <h2 className="font-bold text-lg">Planner - Curriculum File Tree</h2>
+                                <Tree {...treeProps} />
+                            </>
+                        )}
                     </div>
                 </ResizableBox>
 
@@ -170,7 +205,6 @@ const LessonExtractor: React.FC = () => {
                     <p>This column will also resize based on the handle movement.</p>
                 </div>
             </div>
-
 
             <div id='footer'></div>
         </div>
