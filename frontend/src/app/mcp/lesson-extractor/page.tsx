@@ -1,11 +1,11 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { Disclosure } from '@headlessui/react'
-import { ChevronDownIcon, ChevronUpIcon, ChevronLeftIcon, } from '@heroicons/react/24/outline'
+import { ChevronDownIcon, ChevronUpIcon, ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { ResizableBox } from 'react-resizable';
-import mammoth from 'mammoth';
-
 import Tree, { TreeProps } from 'rc-tree';
+import * as pdfjsLib from 'pdfjs-dist/build/pdf';
+import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.entry';
 import 'rc-tree/assets/index.css';
 import 'react-resizable/css/styles.css';
 
@@ -19,8 +19,10 @@ interface TreeNode {
     title: string;
     key: string;
     children?: TreeNode[];
+    isLeaf?: boolean;
 }
 
+// Navigation setup
 const initialNavigation: NavItem[] = [
     { name: 'Planner', current: true },
     { name: 'How-To', current: false },
@@ -30,6 +32,7 @@ function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ');
 }
 
+// Navbar Component
 function Navbar({ navigation, setNavigation }: { navigation: NavItem[], setNavigation: (items: NavItem[]) => void }) {
     return (
         <Disclosure as="nav" className="bg-gray-800">
@@ -73,46 +76,54 @@ function Navbar({ navigation, setNavigation }: { navigation: NavItem[], setNavig
     );
 }
 
-const HelloBanner: React.FC = () => {
-    return (
-        <div className="bg-blue-600 text-white mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 py-6">
-            <h2 className="text-2xl font-bold">Hello!</h2>
-            <p className="mt-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum auctor, felis a congue cursus, nulla arcu volutpat odio, vel dignissim nisi turpis nec risus. Duis ac magna nec libero sodales volutpat.</p>
-        </div>
-    );
+// PDF.js setup
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+
+// Function to render a PDF page
+const renderPdfPage = async (pdfDocument: any, pageNum: number, canvasId: string) => {
+    const page = await pdfDocument.getPage(pageNum);
+    const viewport = page.getViewport({ scale: 1.5 });
+    const canvas = document.getElementById(canvasId) as HTMLCanvasElement;
+    const context = canvas.getContext('2d');
+
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+
+    await page.render({ canvasContext: context, viewport }).promise;
 };
 
+// Function to load a PDF document
+const loadPdfDocument = async (filePath: string, setPdfPages: Function) => {
+    const loadingTask = pdfjsLib.getDocument(filePath);
+    const pdfDocument = await loadingTask.promise;
+
+    const pages = Array.from({ length: pdfDocument.numPages }, (_, i) => i + 1);
+    setPdfPages(pages);
+
+    pages.forEach((pageNum) => {
+        renderPdfPage(pdfDocument, pageNum, `pdf-canvas-${pageNum}`);
+    });
+};
+
+// Lesson Extractor Component
 const LessonExtractor: React.FC = () => {
     const [navigation, setNavigation] = useState(initialNavigation);
-
     const [selectedFile, setSelectedFile] = useState<string | null>(null);
-    const [fileContent, setFileContent] = useState<string | null>(null);
+    const [pdfPages, setPdfPages] = useState<number[]>([]);
 
     const handleFileSelect = (keys: string[], event: any) => {
         const selectedNode = event.node;
         if (selectedNode && selectedNode.isLeaf) {
-            const fileName = selectedNode.title + ".docx"; // Modify according to your naming
+            const fileName = selectedNode.title + ".pdf"; // Ensure the PDF file name matches
             setSelectedFile(selectedNode.title);
-            loadDocxFile(`/docs/${fileName}`);
-        }
-    };
-
-    const loadDocxFile = async (filePath: string) => {
-        try {
-            const response = await fetch(filePath);
-            const arrayBuffer = await response.arrayBuffer();
-            const result = await mammoth.convertToHtml({ arrayBuffer });
-            setFileContent(result.value);
-        } catch (error) {
-            setFileContent("Unable to load file content.");
+            loadPdfDocument(`/docs/${fileName}`, setPdfPages);
         }
     };
 
     const goBackToTree = () => {
         setSelectedFile(null);
-        setFileContent(null);
+        setPdfPages([]);
     };
-
 
     const curriculumTreeData: TreeNode[] = [
         {
@@ -128,26 +139,9 @@ const LessonExtractor: React.FC = () => {
                             key: '0-1-1',
                             children: [
                                 {
-                                    title: 'Listening and Learning',
+                                    title: 'CKLA-G1-LL-Scope-and-Sequence',
                                     key: '0-1-1-0',
-                                    children: [
-                                        {
-                                            title: 'CKLA-CCSS-G1-Unit-By-Unit-Alignment',
-                                            key: '0-1-1-0-0',
-                                            isLeaf: true
-                                        }
-                                    ]
-                                },
-                                {
-                                    title: 'Skills',
-                                    key: '0-1-1-1',
-                                    children: [
-                                        {
-                                            title: 'CKLA-CCSS-G1-Unit-By-Unit-Alignment',
-                                            key: '0-1-1-1-0',
-                                            isLeaf: true
-                                        }
-                                    ]
+                                    isLeaf: true
                                 }
                             ]
                         }
@@ -171,7 +165,10 @@ const LessonExtractor: React.FC = () => {
                 <Disclosure>
                     {({ open }) => (
                         <>
-                            {open && <HelloBanner />}
+                            {open && <div className="bg-blue-600 text-white mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 py-6">
+                                <h2 className="text-2xl font-bold">Hello!</h2>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                            </div>}
                             <Disclosure.Button className="bg-gray-800 text-white w-full mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 py-2 flex items-center">
                                 <span className="font-bold">Directions</span>
                                 {open ? (
@@ -203,8 +200,9 @@ const LessonExtractor: React.FC = () => {
                                     </button>
                                     <h2 className="font-bold text-lg">{selectedFile}</h2>
                                 </div>
-                                {/* Display loaded DOCX file content */}
-                                <div dangerouslySetInnerHTML={{ __html: fileContent ?? "Loading..." }} />
+                                {pdfPages.map(pageNum => (
+                                    <canvas key={pageNum} id={`pdf-canvas-${pageNum}`} className="mt-4" />
+                                ))}
                             </>
                         ) : (
                             <>
