@@ -4,9 +4,11 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    
     "noEmit": true,
     "esModuleInterop": true,
-    "module": "esnext",
+    "module": "commonjs",
+    "target": "es6",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
