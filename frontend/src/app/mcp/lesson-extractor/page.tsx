@@ -4,10 +4,14 @@ import { Disclosure } from '@headlessui/react'
 import { ChevronDownIcon, ChevronUpIcon, ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { ResizableBox } from 'react-resizable';
 import Tree, { TreeProps } from 'rc-tree';
-import * as pdfjsLib from 'pdfjs-dist/build/pdf';
-import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.entry';
 import 'rc-tree/assets/index.css';
 import 'react-resizable/css/styles.css';
+
+
+import * as pdfjsLib from 'pdfjs-dist/build/pdf';
+// Set up the path to the worker file
+pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.ts';
+
 
 // Navigation item type
 type NavItem = {
@@ -87,11 +91,8 @@ const HelloBanner: React.FC = () => {
     );
 };
 
-// Setup PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
-
 // Function to render a PDF page onto a canvas
-const renderPdfPage = async (pdfDoc, pageNum, canvasId) => {
+const renderPdfPage = async (pdfDoc: any, pageNum: any, canvasId: any) => {
     const page = await pdfDoc.getPage(pageNum);
     const viewport = page.getViewport({ scale: 1.5 });
     const canvas = document.getElementById(canvasId) as HTMLCanvasElement;
