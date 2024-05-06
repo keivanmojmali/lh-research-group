@@ -15,6 +15,12 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
+//ADD THE TOP BAR WITH THE BUTTONS 
+//MAKE IT MAKE A SERVER CALL WITH THE INFO 
+//MAKE IT RETURN THE INFORMATION IN A BLOCKNOTE (ADD THE ALGOS THAT ARE NEEDED ETC)
+
+
+
 
 type NavItem = {
     name: string
