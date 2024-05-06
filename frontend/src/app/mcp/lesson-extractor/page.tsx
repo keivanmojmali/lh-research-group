@@ -17,6 +17,7 @@ import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
 import { v4 as uuidv4 } from 'uuid';
+import Editor from '@/components/Editor';
 
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
@@ -114,7 +115,6 @@ const LessonExtractor: React.FC = () => {
     const [numPages, setNumPages] = useState<number>(0);
     const [editors, setEditors] = useState<any>([]);
 
-
     const handleButtonClick = async (buttonId: number) => {
         // Make a server call here
         try {
@@ -138,30 +138,6 @@ const LessonExtractor: React.FC = () => {
 
 
 
-    const createEditorWithContent = (initialContent: any) => {
-        const editor = useCreateBlockNote({
-            initialContent: initialContent && initialContent.length > 0 ? initialContent : [{ id: uuidv4(), type: 'paragraph', content: '' }],
-        });
-        setEditors([...editors, editor]);
-    };
-
-
-    const renderEditors = () => {
-        return editors.map((editor: any, index: any) => (
-            <BlockNoteView
-                key={index}
-                id={uuidv4()}
-                editor={editor}
-                theme={'light'}
-                editable={true}
-                slashMenu={true}
-                onChange={() => {
-                    console.log('editor changed');
-                }}
-            />
-        ));
-    };
-
 
 
     const loadPdf = (fileName: string) => {
@@ -183,10 +159,15 @@ const LessonExtractor: React.FC = () => {
         setSelectedFile(null);
     };
 
+
     const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
         setNumPages(numPages);
         if (selectedFile) {
-            createEditorWithContent(selectedFile.split('/').pop()!);
+            let initialContent = { content: initialLessonData(selectedFile.split('/').pop()!), id: uuidv4(), type: 'paragraph' }
+            console.log(initialContent);
+            //@ts-ignore
+            const newEditor = <Editor initialContent={initialContent} onChange={(content: any) => console.log(content)} />;
+            setEditors([...editors, newEditor]);
         }
     };
 
@@ -235,6 +216,7 @@ const LessonExtractor: React.FC = () => {
         // Handle error (e.g., display error message)
     };
 
+    console.log('editors:', editors)
 
     return (
         <div className="h-screen flex flex-col">
@@ -304,10 +286,18 @@ const LessonExtractor: React.FC = () => {
                     </div>
                     {/* Content in the right column */}
                     <h2 className="font-bold text-lg">Planner - Right Column</h2>
-                    {renderEditors()}
+
+                    {editors.map((editor: any, index: number) => (
+                        < div key={index} className="mb-4" >
+                            {editor}
+                        </div>
+                    ))}
+
+
+
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 
