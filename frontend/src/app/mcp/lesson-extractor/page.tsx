@@ -1,16 +1,18 @@
+
+Copy code
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Disclosure } from '@headlessui/react'
-import { ChevronDownIcon, ChevronUpIcon, ChevronLeftIcon } from '@heroicons/react/24/outline'
+import { Disclosure } from '@headlessui/react';
+import { ChevronDownIcon, ChevronUpIcon, ChevronLeftIcon } from '@heroicons/react/24/outline';
 import { ResizableBox } from 'react-resizable';
 import Tree, { TreeProps } from 'rc-tree';
+import * as pdfjsLib from 'pdfjs-dist/build/pdf';
 import 'rc-tree/assets/index.css';
 import 'react-resizable/css/styles.css';
 
+// Set up the worker source
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdfjs-dist/build/pdf.worker.js';
 
-import * as pdfjsLib from 'pdfjs-dist/build/pdf';
-// Set up the path to the worker file
-pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.ts';
 
 
 // Navigation item type

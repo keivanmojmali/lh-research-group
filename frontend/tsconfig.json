@@ -1,27 +1,45 @@
 {
   "compilerOptions": {
-      "lib": ["dom", "dom.iterable", "esnext", "webworker"],  // Added "webworker"
-      "allowJs": true,
-      "skipLibCheck": true,
-      "strict": true,
-      "noEmit": true,
-      "esModuleInterop": true,
-      "module": "commonjs",
-      "target": "es6",
-      "moduleResolution": "bundler",
-      "resolveJsonModule": true,
-      "isolatedModules": true,
-      "jsx": "preserve",
-      "incremental": true,
-      "plugins": [
-          {
-              "name": "next"
-          }
-      ],
-      "paths": {
-          "@/*": ["./src/*"]
+    "baseUrl": ".", // Sets the base directory to the project root
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext",
+      "webworker"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext", // Set to at least "es2015"
+    "target": "es2020",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
       }
+    ],
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@public/*": [
+        "public/*"
+      ]
+    }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
