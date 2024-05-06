@@ -115,27 +115,24 @@ const LessonExtractor = () => {
     const [numPages, setNumPages] = useState(0);
     const [content, setContent] = useState([]);
 
-    const handleButtonClick = async (buttonId) => {
-        // Make a server call here
-        try {
-            const response = await fetch('your-server-endpoint');
-            const data = await response.json();
-            // Update the editors array with the returned data
-            setEditors([...editors, data.content]);
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
+
+
+    const handleButtonClick = (buttonName) => {
+        // For now, add a new editor directly on button click
+        addEditor(buttonName);
     };
 
+    const addEditor = (editorName) => {
+        // Create a new editor structure with a name and empty initial content
+        const newEditor = {
+            id: uuidv4(),
+            docName: editorName,
+            content: { id: uuidv4(), type: 'paragraph', content: 'New content...' }
+        };
 
-    // type PartialBlock = {
-    //     id?: string;
-    //     type?: string;
-    //     props?: Partial<Record<string, any>>; // exact type depends on "type"
-    //     content?: string
-    //     children?: PartialBlock[];
-    // };
-
+        // Add the new editor to the existing content array
+        setContent((prevContent) => [newEditor, ...prevContent]);
+    };
 
 
 
@@ -157,6 +154,7 @@ const LessonExtractor = () => {
 
 
     const goBackToTree = () => {
+        setContent([]);
         setSelectedFile(null);
     };
 
@@ -173,7 +171,7 @@ const LessonExtractor = () => {
                 {
                     id: uuidv4(),
                     content: initialContent,
-                    name: `${selectedFile.split('/').pop()} Overview`,
+                    docName: `${selectedFile.split('/').pop()} Overview`,
 
                 }
             ]);
@@ -225,7 +223,7 @@ const LessonExtractor = () => {
         // Handle error (e.g., display error message)
     };
 
-
+    console.log(content);
     return (
         <div className="h-screen flex flex-col">
             <div id='navbar'><Navbar navigation={navigation} setNavigation={setNavigation} /></div>
@@ -286,7 +284,7 @@ const LessonExtractor = () => {
                             <button
                                 key={button.id}
                                 className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded `}
-                                onClick={() => console.log(button.name)}
+                                onClick={() => handleButtonClick(button.id)}
                             >
                                 {button.name}
                             </button>
@@ -294,9 +292,9 @@ const LessonExtractor = () => {
                     </div>
                     {/* Scrollable Editors Section */}
                     <div className="overflow-y-auto h-[calc(100%-6rem)]">
-                        <h2 className="font-bold text-lg">Planner - Right Column</h2>
-                        {editors.map(({ id, content }) => (
+                        {content.map(({ id, docName, content }) => (
                             <div key={id} className="mb-4">
+                                <h3 className="font-bold text-lg text-white">{docName}</h3>
                                 <Editor initialContent={[content]} onChange={(content) => console.log(content)} />
                                 {/* Spacer Line */}
                                 <hr className="border-t border-gray-400 my-4" />
