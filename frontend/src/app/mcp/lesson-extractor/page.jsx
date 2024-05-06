@@ -36,28 +36,28 @@ const buttons = [
 ];
 
 
-type NavItem = {
-    name: string
-    current: boolean
-}
+// type NavItem = {
+//     name: string
+//     current: boolean
+// }
 
-interface TreeNode {
-    title: string;
-    key: string;
-    children?: TreeNode[];
-    isLeaf?: boolean;
-}
+// interface TreeNode {
+//     title: string;
+//     key: string;
+//     children?: TreeNode[];
+//     isLeaf?: boolean;
+// }
 
-const initialNavigation: NavItem[] = [
+const initialNavigation = [
     { name: 'Planner', current: true },
     { name: 'How-To', current: false }
 ];
 
-function classNames(...classes: string[]) {
+function classNames(...classes) {
     return classes.filter(Boolean).join(' ');
 }
 
-function Navbar({ navigation, setNavigation }: { navigation: NavItem[], setNavigation: (items: NavItem[]) => void }) {
+function Navbar({ navigation, setNavigation }) {
     return (
         <Disclosure as="nav" className="bg-gray-800">
             {({ open }) => (
@@ -100,7 +100,7 @@ function Navbar({ navigation, setNavigation }: { navigation: NavItem[], setNavig
     );
 }
 
-const HelloBanner: React.FC = () => {
+const HelloBanner = () => {
     return (
         <div className="bg-blue-600 text-white mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 py-6">
             <h2 className="text-2xl font-bold">Hello!</h2>
@@ -109,13 +109,13 @@ const HelloBanner: React.FC = () => {
     );
 };
 
-const LessonExtractor: React.FC = () => {
+const LessonExtractor = () => {
     const [navigation, setNavigation] = useState(initialNavigation);
-    const [selectedFile, setSelectedFile] = useState<string | null>(null);
-    const [numPages, setNumPages] = useState<number>(0);
-    const [editors, setEditors] = useState<any>([]);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [numPages, setNumPages] = useState(0);
+    const [content, setContent] = useState([]);
 
-    const handleButtonClick = async (buttonId: number) => {
+    const handleButtonClick = async (buttonId) => {
         // Make a server call here
         try {
             const response = await fetch('your-server-endpoint');
@@ -128,50 +128,59 @@ const LessonExtractor: React.FC = () => {
     };
 
 
-    type PartialBlock = {
-        id?: string;
-        type?: string;
-        props?: Partial<Record<string, any>>; // exact type depends on "type"
-        content?: string
-        children?: PartialBlock[];
-    };
+    // type PartialBlock = {
+    //     id?: string;
+    //     type?: string;
+    //     props?: Partial<Record<string, any>>; // exact type depends on "type"
+    //     content?: string
+    //     children?: PartialBlock[];
+    // };
 
 
 
 
 
-    const loadPdf = (fileName: string) => {
+    const loadPdf = (fileName) => {
         setSelectedFile(`/docs/${fileName}`);
     };
 
 
 
     const handleFileSelect = (
-        selectedKeys: Key[],
-        info: { event: "select"; selected: boolean; node: any; selectedNodes: any[]; nativeEvent: MouseEvent }
+        selectedKeys,
+        info
     ) => {
         if (info.node.isLeaf) {
             loadPdf(`${info.node.title}.pdf`);
         }
     };
 
+
     const goBackToTree = () => {
         setSelectedFile(null);
     };
 
 
-    const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
+    const onDocumentLoadSuccess = ({ numPages }) => {
         setNumPages(numPages);
         if (selectedFile) {
-            let initialContent = { content: initialLessonData(selectedFile.split('/').pop()!), id: uuidv4(), type: 'paragraph' }
+            let initialContent = { content: initialLessonData(selectedFile.split('/').pop()), id: uuidv4(), type: 'paragraph' }
             console.log(initialContent);
             //@ts-ignore
-            const newEditor = <Editor initialContent={initialContent} onChange={(content: any) => console.log(content)} />;
-            setEditors([...editors, newEditor]);
+
+            setContent((prevContent) => [
+                ...prevContent,
+                {
+                    id: uuidv4(),
+                    content: initialContent,
+                    name: `${selectedFile.split('/').pop()} Overview`,
+
+                }
+            ]);
         }
     };
 
-    const curriculumTreeData: TreeNode[] = [
+    const curriculumTreeData = [
         {
             title: 'Engage NY',
             key: '0',
@@ -197,7 +206,7 @@ const LessonExtractor: React.FC = () => {
         }
     ];
 
-    const treeProps: TreeProps = {
+    const treeProps = {
         prefixCls: "rc-tree",
         className: "mt-2",
         defaultExpandAll: true,
@@ -211,12 +220,11 @@ const LessonExtractor: React.FC = () => {
         ));
     };
 
-    const onError = (error: any) => {
+    const onError = (error) => {
         console.error('Error loading PDF:', error);
         // Handle error (e.g., display error message)
     };
 
-    console.log('editors:', editors)
 
     return (
         <div className="h-screen flex flex-col">
@@ -284,14 +292,17 @@ const LessonExtractor: React.FC = () => {
                             </button>
                         ))}
                     </div>
-                    {/* Content in the right column */}
-                    <h2 className="font-bold text-lg">Planner - Right Column</h2>
-
-                    {editors.map((editor: any, index: number) => (
-                        < div key={index} className="mb-4" >
-                            {editor}
-                        </div>
-                    ))}
+                    {/* Scrollable Editors Section */}
+                    <div className="overflow-y-auto h-[calc(100%-6rem)]">
+                        <h2 className="font-bold text-lg">Planner - Right Column</h2>
+                        {editors.map(({ id, content }) => (
+                            <div key={id} className="mb-4">
+                                <Editor initialContent={[content]} onChange={(content) => console.log(content)} />
+                                {/* Spacer Line */}
+                                <hr className="border-t border-gray-400 my-4" />
+                            </div>
+                        ))}
+                    </div>
 
 
 

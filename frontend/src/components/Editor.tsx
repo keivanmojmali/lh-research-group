@@ -25,6 +25,7 @@ const Editor: React.FC<EditorProps> = ({ initialContent, onChange }) => {
         initialContent: initialContent && initialContent.length > 0 ? initialContent : [{ id: uuidv4(), type: 'paragraph', content: '' }],
     });
 
+
     return (
         <BlockNoteView
             id={uuidv4()}
