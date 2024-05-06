@@ -9,12 +9,14 @@ import 'rc-tree/assets/index.css';
 import 'react-resizable/css/styles.css';
 import { Document, Page, pdfjs } from 'react-pdf';
 import lessonData from '@/app/data/lessonData';
+import initialLessonData from '@/app/data/initialLessonData';
 import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import "@blocknote/core/fonts/inter.css";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
+import { v4 as uuidv4 } from 'uuid';
 
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
@@ -110,7 +112,7 @@ const LessonExtractor: React.FC = () => {
     const [navigation, setNavigation] = useState(initialNavigation);
     const [selectedFile, setSelectedFile] = useState<string | null>(null);
     const [numPages, setNumPages] = useState<number>(0);
-    const [editors, setEditors] = useState();
+    const [editors, setEditors] = useState<any>([]);
 
 
     const handleButtonClick = async (buttonId: number) => {
@@ -126,19 +128,47 @@ const LessonExtractor: React.FC = () => {
     };
 
 
+    type PartialBlock = {
+        id?: string;
+        type?: string;
+        props?: Partial<Record<string, any>>; // exact type depends on "type"
+        content?: string
+        children?: PartialBlock[];
+    };
+
+
+
+    const createEditorWithContent = (initialContent: any) => {
+        const editor = useCreateBlockNote({
+            initialContent: initialContent && initialContent.length > 0 ? initialContent : [{ id: uuidv4(), type: 'paragraph', content: '' }],
+        });
+        setEditors([...editors, editor]);
+    };
+
+
+    const renderEditors = () => {
+        return editors.map((editor: any, index: any) => (
+            <BlockNoteView
+                key={index}
+                id={uuidv4()}
+                editor={editor}
+                theme={'light'}
+                editable={true}
+                slashMenu={true}
+                onChange={() => {
+                    console.log('editor changed');
+                }}
+            />
+        ));
+    };
+
+
 
     const loadPdf = (fileName: string) => {
         setSelectedFile(`/docs/${fileName}`);
     };
 
-    function createBlockNote(initliaContent: string) {
-        const editor = useCreateBlockNote(
-            initliaContent,
-        );
 
-        return <BlockNoteView editor={editor} />;
-
-    }
 
     const handleFileSelect = (
         selectedKeys: Key[],
@@ -155,6 +185,9 @@ const LessonExtractor: React.FC = () => {
 
     const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
         setNumPages(numPages);
+        if (selectedFile) {
+            createEditorWithContent(selectedFile.split('/').pop()!);
+        }
     };
 
     const curriculumTreeData: TreeNode[] = [
@@ -271,7 +304,7 @@ const LessonExtractor: React.FC = () => {
                     </div>
                     {/* Content in the right column */}
                     <h2 className="font-bold text-lg">Planner - Right Column</h2>
-
+                    {renderEditors()}
                 </div>
             </div>
         </div>
