@@ -19,7 +19,14 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 //MAKE IT MAKE A SERVER CALL WITH THE INFO 
 //MAKE IT RETURN THE INFORMATION IN A BLOCKNOTE (ADD THE ALGOS THAT ARE NEEDED ETC)
 
-
+// Define your buttons array
+const buttons = [
+    { name: 'Button 1', id: 1 },
+    { name: 'Button 2', id: 2 },
+    { name: 'Button 3', id: 3 },
+    { name: 'Button 4', id: 4 },
+    { name: 'Button 5', id: 5 }
+];
 
 
 type NavItem = {
@@ -99,6 +106,7 @@ const LessonExtractor: React.FC = () => {
     const [navigation, setNavigation] = useState(initialNavigation);
     const [selectedFile, setSelectedFile] = useState<string | null>(null);
     const [numPages, setNumPages] = useState<number>(0);
+
 
     const loadPdf = (fileName: string) => {
         setSelectedFile(`/docs/${fileName}`);
@@ -190,7 +198,7 @@ const LessonExtractor: React.FC = () => {
 
             <div id='main-content' className="w-full px-2 sm:px-6 lg:px-8 flex-1 mt-6 flex overflow-hidden">
                 <ResizableBox
-                    width={500}
+                    width={700}
                     height={Infinity}
                     minConstraints={[200, 0]}
                     maxConstraints={[600, Infinity]}
@@ -220,6 +228,20 @@ const LessonExtractor: React.FC = () => {
 
                 {/* Right Column */}
                 <div className="flex-1 h-full bg-black p-4 border-l border-gray-300 rounded-r-md">
+                    {/* Top bar with buttons */}
+                    <h2 className="font-bold text-lg mb-2">Tools</h2>
+                    <div className="flex items-center justify-between mb-4 border-b-2 pb-2 overflow-x-auto">
+                        {buttons.map(button => (
+                            <button
+                                key={button.id}
+                                className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded `}
+                                onClick={() => console.log(button.name)}
+                            >
+                                {button.name}
+                            </button>
+                        ))}
+                    </div>
+                    {/* Content in the right column */}
                     <h2 className="font-bold text-lg">Planner - Right Column</h2>
                     <p>This column will also resize based on the handle movement.</p>
                 </div>
