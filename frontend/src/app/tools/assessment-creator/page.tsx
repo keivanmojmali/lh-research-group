@@ -61,22 +61,25 @@ export default function AssessmentCreator() {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
+            // Safeguard against null body
+            if (response.body === null) {
+                throw new Error('Response body is null');
+            }
+
             const reader = response.body.getReader();
             const decoder = new TextDecoder('utf-8');
 
             let resultText = '';
-            reader.read().then(
-                function processText({ done, value }) {
-                    if (done) {
-                        setResult(resultText);
-                        setLoading(false);
-                        return;
-                    }
-                    resultText += decoder.decode(value);
-                    return reader.read().then(processText);
-                });
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) break;
+                resultText += decoder.decode(value, { stream: true });
+            }
 
-        } catch (error) {
+            resultText += decoder.decode(); // Complete decoding
+            setResult(resultText);
+        }
+        catch (error) {
             console.error('Failed to fetch data:', error);
             setLoading(false);
         }

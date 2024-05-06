@@ -7,9 +7,10 @@ import Tree, { TreeProps } from 'rc-tree';
 import { Key } from 'rc-tree/lib/interface';
 import 'rc-tree/assets/index.css';
 import 'react-resizable/css/styles.css';
+import dynamic from 'next/dynamic';
 
 import * as pdfjsLib from 'pdfjs-dist/build/pdf';
-import pdfjsWorker from 'pdfjs-dist/build/pdf.worker';
+// Set the worker URL
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 
@@ -173,13 +174,15 @@ const LessonExtractor: React.FC = () => {
         }
     ];
 
-    // Tree Properties for file selection
+    // Assuming you have already defined your TreeNode interface and data
     const treeProps: TreeProps = {
+        prefixCls: "rc-tree",  // Add this to match the rc-tree component's default
         className: "mt-2",
         defaultExpandAll: true,
         treeData: curriculumTreeData,
-        onSelect: handleFileSelect
+        onSelect: handleFileSelect  // Ensure the event handler matches the required type
     };
+
 
     // Create canvas elements dynamically for all pages
     const renderPdfPages = () => {
