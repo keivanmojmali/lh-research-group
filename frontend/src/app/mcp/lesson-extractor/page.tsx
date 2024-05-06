@@ -1,18 +1,16 @@
-
-Copy code
 'use client';
 import React, { useState, useEffect } from 'react';
 import { Disclosure } from '@headlessui/react';
 import { ChevronDownIcon, ChevronUpIcon, ChevronLeftIcon } from '@heroicons/react/24/outline';
 import { ResizableBox } from 'react-resizable';
 import Tree, { TreeProps } from 'rc-tree';
-import * as pdfjsLib from 'pdfjs-dist/build/pdf';
+import { Key } from 'rc-tree/lib/interface';
 import 'rc-tree/assets/index.css';
 import 'react-resizable/css/styles.css';
 
-// Set up the worker source
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdfjs-dist/build/pdf.worker.js';
-
+import * as pdfjsLib from 'pdfjs-dist/build/pdf';
+import pdfjsWorker from 'pdfjs-dist/build/pdf.worker';
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 
 // Navigation item type
@@ -127,14 +125,20 @@ const LessonExtractor: React.FC = () => {
         }
     };
 
-    // Handle file selection from the tree
-    const handleFileSelect = (keys: string[], event: any) => {
-        const selectedNode = event.node;
-        if (selectedNode && selectedNode.isLeaf) {
-            const fileName = `${selectedNode.title}.pdf`;
-            loadPdf(fileName);
+    // Corrected handleFileSelect function
+    const handleFileSelect = (
+        selectedKeys: Key[],
+        info: { event: "select"; selected: boolean; node: any; selectedNodes: any[]; nativeEvent: MouseEvent }
+    ) => {
+        // Use the first selected key (or adjust logic based on your requirement)
+        const selectedKey = selectedKeys[0] as string;
+
+        // Proceed with your logic using the node data from info
+        if (info.node.isLeaf) {
+            loadPdf(`${info.node.title}.pdf`);
         }
     };
+
 
     // Go back to the file tree view
     const goBackToTree = () => {
