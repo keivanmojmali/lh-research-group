@@ -8,6 +8,12 @@ import { Key } from 'rc-tree/lib/interface';
 import 'rc-tree/assets/index.css';
 import 'react-resizable/css/styles.css';
 import { Document, Page, pdfjs } from 'react-pdf';
+import lessonData from '@/app/data/lessonData';
+import 'react-pdf/dist/Page/TextLayer.css';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
 
 type NavItem = {
@@ -149,7 +155,7 @@ const LessonExtractor: React.FC = () => {
         ));
     };
 
-    const onError = (error) => {
+    const onError = (error: any) => {
         console.error('Error loading PDF:', error);
         // Handle error (e.g., display error message)
     };
@@ -178,7 +184,7 @@ const LessonExtractor: React.FC = () => {
 
             <div id='main-content' className="w-full px-2 sm:px-6 lg:px-8 flex-1 mt-6 flex overflow-hidden">
                 <ResizableBox
-                    width={400}
+                    width={500}
                     height={Infinity}
                     minConstraints={[200, 0]}
                     maxConstraints={[600, Infinity]}
