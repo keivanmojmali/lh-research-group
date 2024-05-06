@@ -11,12 +11,16 @@ import { Document, Page, pdfjs } from 'react-pdf';
 import lessonData from '@/app/data/lessonData';
 import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
+import "@blocknote/core/fonts/inter.css";
+import { useCreateBlockNote } from "@blocknote/react";
+import { BlockNoteView } from "@blocknote/mantine";
+import "@blocknote/mantine/style.css";
 
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
-//ADD THE TOP BAR WITH THE BUTTONS 
 //MAKE IT MAKE A SERVER CALL WITH THE INFO 
+//ADD INITIAL LOADING WITH SOME INFORMATION 
 //MAKE IT RETURN THE INFORMATION IN A BLOCKNOTE (ADD THE ALGOS THAT ARE NEEDED ETC)
 
 // Define your buttons array
@@ -106,11 +110,35 @@ const LessonExtractor: React.FC = () => {
     const [navigation, setNavigation] = useState(initialNavigation);
     const [selectedFile, setSelectedFile] = useState<string | null>(null);
     const [numPages, setNumPages] = useState<number>(0);
+    const [editors, setEditors] = useState();
+
+
+    const handleButtonClick = async (buttonId: number) => {
+        // Make a server call here
+        try {
+            const response = await fetch('your-server-endpoint');
+            const data = await response.json();
+            // Update the editors array with the returned data
+            setEditors([...editors, data.content]);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
 
 
     const loadPdf = (fileName: string) => {
         setSelectedFile(`/docs/${fileName}`);
     };
+
+    function createBlockNote(initliaContent: string) {
+        const editor = useCreateBlockNote(
+            initliaContent,
+        );
+
+        return <BlockNoteView editor={editor} />;
+
+    }
 
     const handleFileSelect = (
         selectedKeys: Key[],
@@ -243,7 +271,7 @@ const LessonExtractor: React.FC = () => {
                     </div>
                     {/* Content in the right column */}
                     <h2 className="font-bold text-lg">Planner - Right Column</h2>
-                    <p>This column will also resize based on the handle movement.</p>
+
                 </div>
             </div>
         </div>
