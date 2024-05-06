@@ -7,7 +7,8 @@ import Tree, { TreeProps } from 'rc-tree';
 import { Key } from 'rc-tree/lib/interface';
 import 'rc-tree/assets/index.css';
 import 'react-resizable/css/styles.css';
-import { Document, Page } from 'react-pdf';
+import { Document, Page, pdfjs } from 'react-pdf';
+
 
 type NavItem = {
     name: string
@@ -148,6 +149,12 @@ const LessonExtractor: React.FC = () => {
         ));
     };
 
+    const onError = (error) => {
+        console.error('Error loading PDF:', error);
+        // Handle error (e.g., display error message)
+    };
+
+
     return (
         <div className="h-screen flex flex-col">
             <div id='navbar'><Navbar navigation={navigation} setNavigation={setNavigation} /></div>
@@ -177,7 +184,7 @@ const LessonExtractor: React.FC = () => {
                     maxConstraints={[600, Infinity]}
                     axis="x"
                 >
-                    <div className="h-full w-full bg-gray-100 p-4 border-r border-gray-300 rounded-l-md overflow-auto">
+                    <div className="h-full w-full bg-black p-4 border-r border-gray-300 rounded-l-md overflow-auto">
                         {selectedFile ? (
                             <>
                                 <div className="flex items-center">
@@ -186,7 +193,7 @@ const LessonExtractor: React.FC = () => {
                                     </button>
                                     <h2 className="font-bold text-lg">{selectedFile}</h2>
                                 </div>
-                                <Document file={selectedFile} onLoadSuccess={onDocumentLoadSuccess}>
+                                <Document file={selectedFile} onLoadSuccess={onDocumentLoadSuccess} onError={onError}>
                                     {renderPdfPages()}
                                 </Document>
                             </>
@@ -200,7 +207,7 @@ const LessonExtractor: React.FC = () => {
                 </ResizableBox>
 
                 {/* Right Column */}
-                <div className="flex-1 h-full bg-gray-100 p-4 border-l border-gray-300 rounded-r-md">
+                <div className="flex-1 h-full bg-black p-4 border-l border-gray-300 rounded-r-md">
                     <h2 className="font-bold text-lg">Planner - Right Column</h2>
                     <p>This column will also resize based on the handle movement.</p>
                 </div>
