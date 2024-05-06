@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Disclosure } from '@headlessui/react';
 import { ChevronDownIcon, ChevronUpIcon, ChevronLeftIcon } from '@heroicons/react/24/outline';
 import { ResizableBox } from 'react-resizable';
@@ -7,14 +7,8 @@ import Tree, { TreeProps } from 'rc-tree';
 import { Key } from 'rc-tree/lib/interface';
 import 'rc-tree/assets/index.css';
 import 'react-resizable/css/styles.css';
-import dynamic from 'next/dynamic';
+import { Document, Page } from 'react-pdf';
 
-import * as pdfjsLib from 'pdfjs-dist/build/pdf';
-// Set the worker URL
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
-
-
-// Navigation item type
 type NavItem = {
     name: string
     current: boolean
@@ -27,18 +21,15 @@ interface TreeNode {
     isLeaf?: boolean;
 }
 
-// Initial Navigation Setup
 const initialNavigation: NavItem[] = [
     { name: 'Planner', current: true },
     { name: 'How-To', current: false }
 ];
 
-// Utility function for conditional class names
 function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ');
 }
 
-// Navbar Component
 function Navbar({ navigation, setNavigation }: { navigation: NavItem[], setNavigation: (items: NavItem[]) => void }) {
     return (
         <Disclosure as="nav" className="bg-gray-800">
@@ -82,7 +73,6 @@ function Navbar({ navigation, setNavigation }: { navigation: NavItem[], setNavig
     );
 }
 
-// Hello Banner Component
 const HelloBanner: React.FC = () => {
     return (
         <div className="bg-blue-600 text-white mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 py-6">
@@ -92,62 +82,32 @@ const HelloBanner: React.FC = () => {
     );
 };
 
-// Function to render a PDF page onto a canvas
-const renderPdfPage = async (pdfDoc: any, pageNum: any, canvasId: any) => {
-    const page = await pdfDoc.getPage(pageNum);
-    const viewport = page.getViewport({ scale: 1.5 });
-    const canvas = document.getElementById(canvasId) as HTMLCanvasElement;
-    const context = canvas.getContext('2d');
-
-    canvas.width = viewport.width;
-    canvas.height = viewport.height;
-
-    await page.render({ canvasContext: context, viewport }).promise;
-};
-
-// Lesson Extractor Component with PDF.js Integration
 const LessonExtractor: React.FC = () => {
     const [navigation, setNavigation] = useState(initialNavigation);
     const [selectedFile, setSelectedFile] = useState<string | null>(null);
-    const [pdfDoc, setPdfDoc] = useState<any>(null);
+    const [numPages, setNumPages] = useState<number>(0);
 
-    // Load and render the PDF
-    const loadPdf = async (fileName: string) => {
-        const filePath = `/docs/${fileName}`;
-
-        try {
-            const loadingTask = pdfjsLib.getDocument(filePath);
-            const pdf = await loadingTask.promise;
-            setPdfDoc(pdf);
-            setSelectedFile(fileName);
-        } catch (error) {
-            console.error(`Unable to load PDF file: ${filePath}`, error);
-            setPdfDoc(null);
-        }
+    const loadPdf = (fileName: string) => {
+        setSelectedFile(`/docs/${fileName}`);
     };
 
-    // Corrected handleFileSelect function
     const handleFileSelect = (
         selectedKeys: Key[],
         info: { event: "select"; selected: boolean; node: any; selectedNodes: any[]; nativeEvent: MouseEvent }
     ) => {
-        // Use the first selected key (or adjust logic based on your requirement)
-        const selectedKey = selectedKeys[0] as string;
-
-        // Proceed with your logic using the node data from info
         if (info.node.isLeaf) {
             loadPdf(`${info.node.title}.pdf`);
         }
     };
 
-
-    // Go back to the file tree view
     const goBackToTree = () => {
         setSelectedFile(null);
-        setPdfDoc(null);
     };
 
-    // Tree data for file selection
+    const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
+        setNumPages(numPages);
+    };
+
     const curriculumTreeData: TreeNode[] = [
         {
             title: 'Engage NY',
@@ -174,36 +134,19 @@ const LessonExtractor: React.FC = () => {
         }
     ];
 
-    // Assuming you have already defined your TreeNode interface and data
     const treeProps: TreeProps = {
-        prefixCls: "rc-tree",  // Add this to match the rc-tree component's default
+        prefixCls: "rc-tree",
         className: "mt-2",
         defaultExpandAll: true,
         treeData: curriculumTreeData,
-        onSelect: handleFileSelect  // Ensure the event handler matches the required type
+        onSelect: handleFileSelect
     };
 
-
-    // Create canvas elements dynamically for all pages
     const renderPdfPages = () => {
-        if (pdfDoc) {
-            const pageNumbers = Array.from({ length: pdfDoc.numPages }, (_, i) => i + 1);
-            return pageNumbers.map((pageNum) => (
-                <canvas key={pageNum} id={`pdf-canvas-${pageNum}`} className="mt-4" />
-            ));
-        }
-        return <p>Loading...</p>;
+        return Array.from({ length: numPages }, (_, i) => i + 1).map((pageNum) => (
+            <Page key={pageNum} pageNumber={pageNum} />
+        ));
     };
-
-    // Render the PDF pages when selectedFile changes
-    useEffect(() => {
-        if (pdfDoc) {
-            const pageNumbers = Array.from({ length: pdfDoc.numPages }, (_, i) => i + 1);
-            pageNumbers.forEach((pageNum) => {
-                renderPdfPage(pdfDoc, pageNum, `pdf-canvas-${pageNum}`);
-            });
-        }
-    }, [pdfDoc]);
 
     return (
         <div className="h-screen flex flex-col">
@@ -227,7 +170,6 @@ const LessonExtractor: React.FC = () => {
             </div>
 
             <div id='main-content' className="w-full px-2 sm:px-6 lg:px-8 flex-1 mt-6 flex overflow-hidden">
-                {/* Left Column */}
                 <ResizableBox
                     width={400}
                     height={Infinity}
@@ -244,7 +186,9 @@ const LessonExtractor: React.FC = () => {
                                     </button>
                                     <h2 className="font-bold text-lg">{selectedFile}</h2>
                                 </div>
-                                {renderPdfPages()}
+                                <Document file={selectedFile} onLoadSuccess={onDocumentLoadSuccess}>
+                                    {renderPdfPages()}
+                                </Document>
                             </>
                         ) : (
                             <>
@@ -261,8 +205,6 @@ const LessonExtractor: React.FC = () => {
                     <p>This column will also resize based on the handle movement.</p>
                 </div>
             </div>
-
-            <div id='footer'></div>
         </div>
     );
 };
