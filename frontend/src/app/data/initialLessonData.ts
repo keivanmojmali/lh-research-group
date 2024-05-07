@@ -20,7 +20,6 @@ export default function initialLessonData(documentName: string): string {
         "In id nisi et leo aliquam vulputate sit amet vel mi. Sed ultricies commodo tortor in gravida.";
       break;
   }
-  console.log("variableValue", createBlocksFromStr(variableValue));
   //@ts-ignore
   return variableValue ? createBlocksFromStr(variableValue) : "";
 }

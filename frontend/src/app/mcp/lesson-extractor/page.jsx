@@ -22,8 +22,6 @@ import Editor from '@/components/Editor';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
-//M
-
 // Define your buttons array
 const buttons = [
     { name: 'Activity', id: 1 },
@@ -125,21 +123,16 @@ const LessonExtractor = () => {
         const newEditor = {
             id: uuidv4(),
             docName: editorName,
-            content: { id: uuidv4(), type: 'paragraph', content: 'New content...' }
+            content: [{ id: uuidv4(), type: 'paragraph', content: "NEW CONTENT" }]
         };
 
         // Add the new editor to the existing content array
         setContent((prevContent) => [newEditor, ...prevContent]);
     };
 
-
-
-
     const loadPdf = (fileName) => {
         setSelectedFile(`/docs/${fileName}`);
     };
-
-
 
     const handleFileSelect = (
         selectedKeys,
@@ -150,12 +143,10 @@ const LessonExtractor = () => {
         }
     };
 
-
     const goBackToTree = () => {
         setContent([]);
         setSelectedFile(null);
     };
-
 
     const onDocumentLoadSuccess = ({ numPages }) => {
         setNumPages(numPages);
