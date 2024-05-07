@@ -26,7 +26,6 @@ client = boto3.client(
 
 def streaming_llama3_call(size, messages):
 
-    print("messages:", messages)
     # models from aws bedrock
     model = {
         "8b": "meta.llama3-8b-instruct-v1:0",
@@ -52,8 +51,6 @@ def streaming_llama3_call(size, messages):
         messages, tokenize=False, add_generation_prompt=True
     )
 
-    print("Prompt:", prompt)
-
     # Format the request payload using the model's native structure.
     request = {
         "prompt": prompt,
@@ -62,8 +59,6 @@ def streaming_llama3_call(size, messages):
         "temperature": 0.7,
         "top_p": 0.9,
     }
-
-    print("Request:", request)
 
     # Encode and send the request.
     response_stream = client.invoke_model_with_response_stream(
@@ -105,8 +100,6 @@ def llama3_call(size, messages):
         messages, tokenize=False, add_generation_prompt=True
     )
 
-    print("Prompt:", prompt)
-
     # Format the request payload using the model's native structure.
     request = {
         "prompt": prompt,
@@ -116,8 +109,6 @@ def llama3_call(size, messages):
         "top_p": 0.9,
     }
 
-    print("Request:", request)
-
     # Encode and send the request.
     response = client.invoke_model(
         body=json.dumps(request),
@@ -125,8 +116,6 @@ def llama3_call(size, messages):
     )
 
     response_body = json.loads(response.get("body").read())
+    content = response_body.get("generation")
 
-    # The response from the model now mapped to the answer
-    answer = response_body.get("completions")[0].get("data").get("text")
-
-    return {"statusCode": 200, "body": json.dumps({"Answer": answer})}
+    return content

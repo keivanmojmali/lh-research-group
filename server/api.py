@@ -58,9 +58,7 @@ def test():
     # Attempt to get JSON data from request
     try:
         data = request.get_json()
-        print("Received data:", json.dumps(data, indent=4))  # Print formatted JSON data
     except Exception as e:
-        print("Error parsing JSON:", str(e))
         return jsonify({"error": "Invalid JSON data"}), 400
 
     # Extract data with default values and logging
@@ -92,15 +90,12 @@ def test():
             {"role": "user", "content": final_prompt},
         ]
 
-        print("Final Prompt:", final_prompt)
-        print("System Prompt:", system_prompt)
-
     except Exception as e:
-        print("Error constructing prompts:", str(e))
         return jsonify({"error": "Error in generating prompts"}), 500
 
     # Stream the response back to the client
     try:
-        return Response(llama3_call(size, messages), mimetype="text/plain")
+        content = llama3_call(size, messages)
+        return jsonify({"content": content})
     except Exception as e:
         return jsonify({"error": str(e)}), 500

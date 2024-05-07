@@ -18,6 +18,7 @@ import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
 import { v4 as uuidv4 } from 'uuid';
 import Editor from '@/components/Editor';
+import { createBlocksFromStr } from '@/utils/stringUtils';
 
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
@@ -141,7 +142,18 @@ const LessonExtractor = () => {
             }
 
             const data = await response.json();  // Assuming the response is also JSON
-            console.log("Server response:", data);
+            const content = createBlocksFromStr(data.content)
+
+            setContent((prevContent) => [
+                {
+                    id: uuidv4(),
+                    content: content,
+                    docName: `${selectedFile.split('/').pop()} | ${editorName}`
+                },
+                ...prevContent,
+            ]);
+
+
         } catch (error) {
             console.error('Failed to fetch from the Flask server:', error);
         }
@@ -289,7 +301,7 @@ const LessonExtractor = () => {
                             <button
                                 key={button.id}
                                 className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded `}
-                                onClick={() => handleButtonClick(button.id)}
+                                onClick={() => handleButtonClick(button.name)}
                             >
                                 {button.name}
                             </button>
