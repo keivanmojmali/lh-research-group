@@ -160,10 +160,8 @@ const LessonExtractor = () => {
     const onDocumentLoadSuccess = ({ numPages }) => {
         setNumPages(numPages);
         if (selectedFile) {
-            let initialContent = { content: initialLessonData(selectedFile.split('/').pop()), id: uuidv4(), type: 'paragraph' }
-            console.log(initialContent);
+            let initialContent = initialLessonData(selectedFile.split('/').pop());
             //@ts-ignore
-
             setContent((prevContent) => [
                 ...prevContent,
                 {
@@ -293,7 +291,7 @@ const LessonExtractor = () => {
                         {content.map(({ id, docName, content }) => (
                             <div key={id} className="mb-4">
                                 <h3 className="font-bold text-lg text-white">{docName}</h3>
-                                <Editor initialContent={[content]} onChange={(content) => console.log(content)} />
+                                <Editor initialContent={content} onChange={(content) => console.log(content)} />
                                 {/* Spacer Line */}
                                 <hr className="border-t border-gray-400 my-4" />
                             </div>

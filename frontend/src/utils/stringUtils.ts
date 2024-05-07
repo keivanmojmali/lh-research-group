@@ -64,6 +64,12 @@ export function createBlocksFromStr(str: string): PartialBlock[] {
   let currentContent: string = "";
   let newFileContent: PartialBlock[] = [];
 
+  // Adding a blank block at the very top
+  newFileContent.push({
+    id: uuid(),
+    content: " ",
+  });
+
   for (let i = 0; i < str.length; i++) {
     if (str[i] === "\n" && str[i + 1] !== "\n") {
       // End of a line but not a paragraph
@@ -104,5 +110,10 @@ export function createBlocksFromStr(str: string): PartialBlock[] {
     });
   }
 
+  // Adding a blank block at the very bottom
+  newFileContent.push({
+    id: uuid(),
+    content: " ",
+  });
   return newFileContent;
 }
