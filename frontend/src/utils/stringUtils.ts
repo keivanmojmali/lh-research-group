@@ -60,7 +60,7 @@ function getLayoutBlocks(key: string): PartialBlock[] {
 }
 
 //creates an array of partial blocks - each line is a block and each paragraph gets an empty content block between it for spacing
-function createBlocksFromStr(str: string): PartialBlock[] {
+export function createBlocksFromStr(str: string): PartialBlock[] {
   let currentContent: string = "";
   let newFileContent: PartialBlock[] = [];
 

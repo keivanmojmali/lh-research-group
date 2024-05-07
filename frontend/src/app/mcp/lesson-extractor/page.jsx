@@ -22,17 +22,15 @@ import Editor from '@/components/Editor';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
-//MAKE IT MAKE A SERVER CALL WITH THE INFO 
-//ADD INITIAL LOADING WITH SOME INFORMATION 
-//MAKE IT RETURN THE INFORMATION IN A BLOCKNOTE (ADD THE ALGOS THAT ARE NEEDED ETC)
+//M
 
 // Define your buttons array
 const buttons = [
-    { name: 'Button 1', id: 1 },
-    { name: 'Button 2', id: 2 },
-    { name: 'Button 3', id: 3 },
-    { name: 'Button 4', id: 4 },
-    { name: 'Button 5', id: 5 }
+    { name: 'Activity', id: 1 },
+    { name: 'Worksheet', id: 2 },
+    { name: 'Presentation', id: 3 },
+    { name: 'Slides', id: 4 },
+    { name: 'Homework', id: 5 }
 ];
 
 
