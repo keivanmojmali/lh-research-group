@@ -113,22 +113,40 @@ const LessonExtractor = () => {
 
 
 
-    const handleButtonClick = (buttonName) => {
+    function handleButtonClick(buttonName) {
         // For now, add a new editor directly on button click
         addEditor(buttonName);
     };
 
-    const addEditor = (editorName) => {
-        // Create a new editor structure with a name and empty initial content
-        const newEditor = {
-            id: uuidv4(),
-            docName: editorName,
-            content: [{ id: uuidv4(), type: 'paragraph', content: "NEW CONTENT" }]
+    async function addEditor(editorName) {
+        const requestData = {
+            typeOfQuestion: "Open ended",
+            typeOfAssessment: "Exit ticket",
+            numberOfQuestions: 4,
+            size: "8b",
+            passage: "Sample passage text for testing."
         };
 
-        // Add the new editor to the existing content array
-        setContent((prevContent) => [newEditor, ...prevContent]);
-    };
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/test`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'  // Ensure the content type is application/json
+                },
+                body: JSON.stringify(requestData)  // Stringify your request data
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+
+            const data = await response.json();  // Assuming the response is also JSON
+            console.log("Server response:", data);
+        } catch (error) {
+            console.error('Failed to fetch from the Flask server:', error);
+        }
+    }
+
 
     const loadPdf = (fileName) => {
         setSelectedFile(`/docs/${fileName}`);
