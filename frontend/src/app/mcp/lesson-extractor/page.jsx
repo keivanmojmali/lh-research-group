@@ -19,6 +19,7 @@ import "@blocknote/mantine/style.css";
 import { v4 as uuidv4 } from 'uuid';
 import Editor from '@/components/Editor';
 import { createBlocksFromStr } from '@/utils/stringUtils';
+import LoadingSpinner from '@/components/loadingSpinner';
 
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
@@ -111,6 +112,7 @@ const LessonExtractor = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [numPages, setNumPages] = useState(0);
     const [content, setContent] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
 
 
@@ -120,6 +122,7 @@ const LessonExtractor = () => {
     };
 
     async function addEditor(editorName) {
+        setIsLoading(true);
         const requestData = {
             typeOfQuestion: "Open ended",
             typeOfAssessment: "Exit ticket",
@@ -152,10 +155,10 @@ const LessonExtractor = () => {
                 },
                 ...prevContent,
             ]);
-
-
         } catch (error) {
             console.error('Failed to fetch from the Flask server:', error);
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -295,20 +298,30 @@ const LessonExtractor = () => {
                 {/* Right Column */}
                 <div className="flex-1 h-full bg-black p-4 border-l border-gray-300 rounded-r-md">
                     {/* Top bar with buttons */}
-                    <h2 className="font-bold text-lg mb-2">Tools</h2>
-                    <div className="flex items-center justify-between mb-4 border-b-2 pb-2 overflow-x-auto">
-                        {buttons.map(button => (
-                            <button
-                                key={button.id}
-                                className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded `}
-                                onClick={() => handleButtonClick(button.name)}
-                            >
-                                {button.name}
-                            </button>
-                        ))}
-                    </div>
+                    {selectedFile &&
+                        <>
+                            <h2 className="font-bold text-lg mb-2">Tools</h2>
+                            <div className="flex items-center justify-between mb-4 border-b-2 pb-2 overflow-x-auto">
+                                {buttons.map(button => (
+                                    <button
+                                        key={button.id}
+                                        className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded `}
+                                        onClick={() => handleButtonClick(button.name)}
+                                    >
+                                        {button.name}
+                                    </button>
+                                ))}
+                            </div>
+                        </>
+                    }
                     {/* Scrollable Editors Section */}
+
                     <div className="overflow-y-auto h-[calc(100%-6rem)]">
+                        {isLoading &&
+                            <div className="bg-white rounded-lg h-64 flex items-center justify-center shadow">
+                                <LoadingSpinner />
+                            </div>
+                        }
                         {content.map(({ id, docName, content }) => (
                             <div key={id} className="mb-4">
                                 <h3 className="font-bold text-lg text-white">{docName}</h3>
