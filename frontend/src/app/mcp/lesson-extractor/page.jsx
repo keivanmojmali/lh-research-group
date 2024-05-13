@@ -125,6 +125,46 @@ const HowToContent = () => {
             </p>
             <img src="/images/videplaceholder.png" alt="Video Placeholder" className="my-4 rounded-lg shadow-md" />
 
+            <h2 className="text-xl font-bold mt-10 mb-4 text-white border-t border-gray-500 pt-6">Generating Content</h2>
+            <p>
+                Maecenas elementum congue augue, nec scelerisque elit elementum nec. Vivamus auctor euismod dolor, id consectetur ante malesuada ac.
+                Phasellus gravida condimentum lobortis. Suspendisse rutrum nibh in neque lobortis bibendum. Integer varius a neque pretium facilisis.
+                Duis nec convallis tellus.
+            </p>
+            <img src="/images/videplaceholder.png" alt="Video Placeholder" className="my-4 rounded-lg shadow-md" />
+
+            <h2 className="text-xl font-bold mt-10 mb-4 text-white border-t border-gray-500 pt-6">Generating Content</h2>
+            <p>
+                Maecenas elementum congue augue, nec scelerisque elit elementum nec. Vivamus auctor euismod dolor, id consectetur ante malesuada ac.
+                Phasellus gravida condimentum lobortis. Suspendisse rutrum nibh in neque lobortis bibendum. Integer varius a neque pretium facilisis.
+                Duis nec convallis tellus.
+            </p>
+            <img src="/images/videplaceholder.png" alt="Video Placeholder" className="my-4 rounded-lg shadow-md" />
+
+            <h2 className="text-xl font-bold mt-10 mb-4 text-white border-t border-gray-500 pt-6">Generating Content</h2>
+            <p>
+                Maecenas elementum congue augue, nec scelerisque elit elementum nec. Vivamus auctor euismod dolor, id consectetur ante malesuada ac.
+                Phasellus gravida condimentum lobortis. Suspendisse rutrum nibh in neque lobortis bibendum. Integer varius a neque pretium facilisis.
+                Duis nec convallis tellus.
+            </p>
+            <img src="/images/videplaceholder.png" alt="Video Placeholder" className="my-4 rounded-lg shadow-md" />
+
+            <h2 className="text-xl font-bold mt-10 mb-4 text-white border-t border-gray-500 pt-6">Generating Content</h2>
+            <p>
+                Maecenas elementum congue augue, nec scelerisque elit elementum nec. Vivamus auctor euismod dolor, id consectetur ante malesuada ac.
+                Phasellus gravida condimentum lobortis. Suspendisse rutrum nibh in neque lobortis bibendum. Integer varius a neque pretium facilisis.
+                Duis nec convallis tellus.
+            </p>
+            <img src="/images/videplaceholder.png" alt="Video Placeholder" className="my-4 rounded-lg shadow-md" />
+
+            <h2 className="text-xl font-bold mt-10 mb-4 text-white border-t border-gray-500 pt-6">Generating Content</h2>
+            <p>
+                Maecenas elementum congue augue, nec scelerisque elit elementum nec. Vivamus auctor euismod dolor, id consectetur ante malesuada ac.
+                Phasellus gravida condimentum lobortis. Suspendisse rutrum nibh in neque lobortis bibendum. Integer varius a neque pretium facilisis.
+                Duis nec convallis tellus.
+            </p>
+            <img src="/images/videplaceholder.png" alt="Video Placeholder" className="my-4 rounded-lg shadow-md" />
+
 
         </div>
     );
