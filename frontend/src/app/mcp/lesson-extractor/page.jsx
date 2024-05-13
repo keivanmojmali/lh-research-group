@@ -107,6 +107,30 @@ const HelloBanner = () => {
     );
 };
 
+const HowToContent = () => {
+    return (
+        <div className="bg-black rounded-lg shadow p-6 mx-auto max-w-screen-md">
+            <h1 className="text-4xl font-bold mb-6">How-To Tutorial</h1>
+            <p>
+                Phasellus et nunc porta, faucibus orci at, pulvinar dolor. Fusce imperdiet consequat massa, non tincidunt lorem egestas vel.
+                Curabitur non nunc libero. Nulla nec eros nisl. Proin fringilla ante sit amet metus vestibulum, tincidunt vulputate nulla semper.
+                Morbi eleifend finibus eleifend.
+            </p>
+
+            <h2 className="text-2xl font-bold mt-6 mb-4">Getting Started</h2>
+            <p>
+                Maecenas elementum congue augue, nec scelerisque elit elementum nec. Vivamus auctor euismod dolor, id consectetur ante malesuada ac.
+                Phasellus gravida condimentum lobortis. Suspendisse rutrum nibh in neque lobortis bibendum. Integer varius a neque pretium facilisis.
+                Duis nec convallis tellus.
+            </p>
+            <img src="/images/videplaceholder.png" alt="Video Placeholder" className="my-4 rounded-lg shadow-md" />
+
+
+        </div>
+    );
+};
+
+
 const LessonExtractor = () => {
     const [navigation, setNavigation] = useState(initialNavigation);
     const [selectedFile, setSelectedFile] = useState(null);
@@ -350,8 +374,8 @@ const LessonExtractor = () => {
                 </div>
             }
             {navigation[1].current &&  // Assuming "How-To" is the second item in your navigation array
-                <div id='main-content' className="w-full px-2 sm:px-6 lg:px-8 flex-1 mt-6 bg-white">
-                    <h1 className='bg-black'>hhh</h1>
+                <div id='main-content' className="w-full px-2 sm:px-6 lg:px-8 flex-1 mt-6 bg-black">
+                    {HowToContent()}
                 </div>
             }
 
