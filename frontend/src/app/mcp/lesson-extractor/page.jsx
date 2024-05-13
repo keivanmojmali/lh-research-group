@@ -117,7 +117,7 @@ const HowToContent = () => {
                 Morbi eleifend finibus eleifend.
             </p>
 
-            <h2 className="text-2xl font-bold mt-6 mb-4">Getting Started</h2>
+            <h2 className="text-xl font-bold mt-10 mb-4 text-white border-t border-gray-500 pt-6">Generating Content</h2>
             <p>
                 Maecenas elementum congue augue, nec scelerisque elit elementum nec. Vivamus auctor euismod dolor, id consectetur ante malesuada ac.
                 Phasellus gravida condimentum lobortis. Suspendisse rutrum nibh in neque lobortis bibendum. Integer varius a neque pretium facilisis.
