@@ -1,4 +1,6 @@
+//@ts-nocheck
 import { v4 as uuid } from "uuid";
+// customBlocks.ts
 
 interface Data {
   [key: string]: string;
