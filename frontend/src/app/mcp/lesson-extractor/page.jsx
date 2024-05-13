@@ -20,6 +20,9 @@ import { v4 as uuidv4 } from 'uuid';
 import Editor from '@/components/Editor';
 import { createBlocksFromStr } from '@/utils/stringUtils';
 import LoadingSpinner from '@/components/loadingSpinner';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
+import { Document as DocxDocument, Packer, Paragraph, TextRun } from 'docx';
 
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
@@ -198,11 +201,70 @@ const LessonExtractor = () => {
     const [content, setContent] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [fileNameStripped, setFileNameStripped] = useState(null);
+    const [isDownloading, setIsDownloading] = useState(false);
+
 
     function handleButtonClick(buttonName) {
         // For now, add a new editor directly on button click
         addEditor(buttonName);
     };
+
+
+    const convertToDocx = async (docName, content) => {
+        console.log('Converting to DOCX:', { docName, content });
+        const doc = new DocxDocument();
+
+        const paragraphs = content.map(block => {
+            if (block && block.content) {
+                return new Paragraph({
+                    children: [new TextRun(block.content)]
+                });
+            } else {
+                console.warn('Unexpected block structure:', block);
+                return new Paragraph({ text: 'Unexpected content structure' });
+            }
+        });
+
+        doc.addSection({ children: paragraphs });
+
+        const buffer = await Packer.toBuffer(doc);
+        return { buffer, docName: `${docName}.docx` };
+    };
+
+
+
+
+    const handleDownload = async () => {
+        setIsDownloading(true);
+
+        const zip = new JSZip();
+        for (const item of content) {
+            if (item.content && Array.isArray(item.content)) {
+                try {
+                    const { buffer, docName } = await convertToDocx(item.docName, item.content);
+                    zip.file(docName, buffer);
+                } catch (error) {
+                    console.error(`Failed to convert ${item.docName}:`, error);
+                }
+            } else {
+                console.warn('Unexpected content structure:', item);
+            }
+        }
+
+        try {
+            const zipBlob = await zip.generateAsync({ type: 'blob' });
+            saveAs(zipBlob, 'lesson_extractor_content.zip');
+        } catch (error) {
+            console.error('Failed to generate zip:', error);
+        } finally {
+            setIsDownloading(false);
+        }
+    };
+
+
+
+
+
 
     async function addEditor(editorName) {
         setIsLoading(true);
@@ -390,12 +452,17 @@ const LessonExtractor = () => {
                                         {/* <h2 className="font-bold text-lg ml-2">|</h2> */}
                                     </div>
                                     <button
-                                        className="text-blue-700 flex items-center hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center  dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
+                                        onClick={handleDownload}
+                                        className="text-blue-700 flex items-center hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                                         aria-label="Download"
+                                        disabled={isDownloading}
                                     >
-                                        Download
+                                        {isDownloading ? 'Downloading...' : 'Download'}
+                                        {isDownloading && <LoadingSpinner className="h-5 w-5 ml-2 animate-spin" />}
                                         <ArrowDownTrayIcon className="h-5 w-5 ml-2" />
                                     </button>
+
+
                                 </div>
                                 <div className="flex items-center justify-between mb-4 border-t-2 border-b-2 pt-2 pb-2 overflow-x-auto">
                                     {buttons.map(button => (
