@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { Disclosure } from '@headlessui/react';
-import { ChevronDownIcon, ChevronUpIcon, ChevronLeftIcon } from '@heroicons/react/24/outline';
+import { ChevronDownIcon, ChevronUpIcon, ChevronLeftIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { ResizableBox } from 'react-resizable';
 import Tree, { TreeProps } from 'rc-tree';
 import { Key } from 'rc-tree/lib/interface';
@@ -26,11 +26,11 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 
 // Define your buttons array
 const buttons = [
-    { name: 'Activity', id: 1 },
-    { name: 'Worksheet', id: 2 },
-    { name: 'Presentation', id: 3 },
-    { name: 'Slides', id: 4 },
-    { name: 'Homework', id: 5 }
+    { name: 'Warm-Up Problem', id: 1 },
+    { name: 'Video + Guided Notes', id: 2 },
+    { name: 'Practice Activity', id: 3 },
+    { name: 'Extension Activity', id: 4 },
+    { name: 'Mastery Check', id: 5 }
 ];
 
 
@@ -113,8 +113,7 @@ const LessonExtractor = () => {
     const [numPages, setNumPages] = useState(0);
     const [content, setContent] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-
-
+    const [fileNameStripped, setFileNameStripped] = useState(null);
 
     function handleButtonClick(buttonName) {
         // For now, add a new editor directly on button click
@@ -182,16 +181,17 @@ const LessonExtractor = () => {
     };
 
     const onDocumentLoadSuccess = ({ numPages }) => {
+        setFileNameStripped(selectedFile.replace(/^\/docs\//, '').replace(/\.pdf$/, ''))
         setNumPages(numPages);
         if (selectedFile) {
-            let initialContent = initialLessonData(selectedFile.split('/').pop());
+            let initialContent = initialLessonData(selectedFile.replace(/^\/docs\//, '').replace(/\.pdf$/, ''));
             //@ts-ignore
             setContent((prevContent) => [
                 ...prevContent,
                 {
                     id: uuidv4(),
                     content: initialContent,
-                    docName: `${selectedFile.split('/').pop()} Overview`,
+                    docName: `${selectedFile.replace(/^\/docs\//, '').replace(/\.pdf$/, '')} | Overview`,
 
                 }
             ]);
@@ -280,7 +280,7 @@ const LessonExtractor = () => {
                                     <button onClick={goBackToTree} className="mr-2">
                                         <ChevronLeftIcon className="h-5 w-5" />
                                     </button>
-                                    <h2 className="font-bold text-lg">{selectedFile}</h2>
+                                    <h2 className="font-bold text-lg">{fileNameStripped}</h2>
                                 </div>
                                 <Document file={selectedFile} onLoadSuccess={onDocumentLoadSuccess} onError={onError}>
                                     {renderPdfPages()}
@@ -300,12 +300,24 @@ const LessonExtractor = () => {
                     {/* Top bar with buttons */}
                     {selectedFile &&
                         <>
-                            <h2 className="font-bold text-lg mb-2">Tools</h2>
-                            <div className="flex items-center justify-between mb-4 border-b-2 pb-2 overflow-x-auto">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className='flex items-center'>
+                                    <h2 className="font-bold text-xl">Tools</h2>
+                                    {/* <h2 className="font-bold text-lg ml-2">|</h2> */}
+                                </div>
+                                <button
+                                    className="text-blue-700 flex items-center hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center  dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
+                                    aria-label="Download"
+                                >
+                                    Download
+                                    <ArrowDownTrayIcon className="h-5 w-5 ml-2" />
+                                </button>
+                            </div>
+                            <div className="flex items-center justify-between mb-4 border-t-2 border-b-2 pt-2 pb-2 overflow-x-auto">
                                 {buttons.map(button => (
                                     <button
                                         key={button.id}
-                                        className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded `}
+                                        className="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-md px-5 py-2.5 text-center mr-2"
                                         onClick={() => handleButtonClick(button.name)}
                                     >
                                         {button.name}
@@ -323,8 +335,8 @@ const LessonExtractor = () => {
                             </div>
                         }
                         {content.map(({ id, docName, content }) => (
-                            <div key={id} className="mb-4">
-                                <h3 className="font-bold text-lg text-white">{docName}</h3>
+                            <div key={id} className="mb-4 p-2">
+                                <h3 className="font-bold text-xl mb-2 ml-1 text-white">{docName}</h3>
                                 <Editor initialContent={content} onChange={(content) => console.log(content)} />
                                 {/* Spacer Line */}
                                 <hr className="border-t border-gray-400 my-4" />
