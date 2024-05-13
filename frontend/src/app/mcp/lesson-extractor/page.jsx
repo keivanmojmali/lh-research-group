@@ -22,7 +22,7 @@ import { createBlocksFromStr } from '@/utils/stringUtils';
 import LoadingSpinner from '@/components/loadingSpinner';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
-import { Document as DocxDocument, Packer, Paragraph, TextRun } from 'docx';
+import ReactDOM from 'react-dom';
 
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
@@ -204,67 +204,75 @@ const LessonExtractor = () => {
     const [isDownloading, setIsDownloading] = useState(false);
 
 
-    function handleButtonClick(buttonName) {
-        // For now, add a new editor directly on button click
-        addEditor(buttonName);
-    };
-
 
     const convertToDocx = async (docName, content) => {
-        console.log('Converting to DOCX:', { docName, content });
-        const doc = new DocxDocument();
 
-        const paragraphs = content.map(block => {
-            if (block && block.content) {
-                return new Paragraph({
-                    children: [new TextRun(block.content)]
-                });
-            } else {
-                console.warn('Unexpected block structure:', block);
-                return new Paragraph({ text: 'Unexpected content structure' });
-            }
+
+        // Get HTML from the editor
+        const html = await editorRef.current.getHtml();
+        console.log(html);
+        // Convert HTML to DOCX
+        const buffer = await HTMLtoDOCX(html, null, {
+            table: { row: { cantSplit: true } },
+            footer: true,
+            pageNumber: true,
         });
 
-        doc.addSection({ children: paragraphs });
+        // Clean up
+        ReactDOM.unmountComponentAtNode(tempContainer);
+        document.body.removeChild(tempContainer);
 
-        const buffer = await Packer.toBuffer(doc);
         return { buffer, docName: `${docName}.docx` };
     };
 
 
-
-
     const handleDownload = async () => {
-        setIsDownloading(true);
-
-        const zip = new JSZip();
-        for (const item of content) {
-            if (item.content && Array.isArray(item.content)) {
-                try {
-                    const { buffer, docName } = await convertToDocx(item.docName, item.content);
-                    zip.file(docName, buffer);
-                } catch (error) {
-                    console.error(`Failed to convert ${item.docName}:`, error);
-                }
-            } else {
-                console.warn('Unexpected content structure:', item);
-            }
+        for (let item of content) {
+            console.log("item", item)
+            const domItem = document.getElementById(item.id);
+            console.log("domItem", domItem)
         }
 
-        try {
-            const zipBlob = await zip.generateAsync({ type: 'blob' });
-            saveAs(zipBlob, 'lesson_extractor_content.zip');
-        } catch (error) {
-            console.error('Failed to generate zip:', error);
-        } finally {
-            setIsDownloading(false);
-        }
+        // setIsDownloading(true);
+
+        // const zip = new JSZip();
+        // for (const item of content) {
+        //     if (item.content && Array.isArray(item.content)) {
+        //         try {
+
+        //             // const { buffer, docName } = await convertToDocx(item.docName, item.content);
+        //             // zip.file(docName, buffer);
+        //         } catch (error) {
+        //             console.error(`Failed to convert ${item.docName}:`, error);
+        //         }
+        //     } else {
+        //         console.warn('Unexpected content structure:', item);
+        //     }
+        // }
+
+        // try {
+        //     const zipBlob = await zip.generateAsync({ type: 'blob' });
+        //     saveAs(zipBlob, 'lesson_extractor_content.zip');
+        // } catch (error) {
+        //     console.error('Failed to generate zip:', error);
+        // } finally {
+        //     setIsDownloading(false);
+        // }
     };
 
 
 
 
 
+
+
+
+
+
+    function handleButtonClick(buttonName) {
+        // For now, add a new editor directly on button click
+        addEditor(buttonName);
+    };
 
     async function addEditor(editorName) {
         setIsLoading(true);
@@ -308,6 +316,9 @@ const LessonExtractor = () => {
     }
 
 
+
+
+
     const loadPdf = (fileName) => {
         setSelectedFile(`/docs/${fileName}`);
     };
@@ -330,6 +341,7 @@ const LessonExtractor = () => {
         setFileNameStripped(selectedFile.replace(/^\/docs\//, '').replace(/\.pdf$/, ''))
         setNumPages(numPages);
         if (selectedFile) {
+
             let initialContent = initialLessonData(selectedFile.replace(/^\/docs\//, '').replace(/\.pdf$/, ''));
             //@ts-ignore
             setContent((prevContent) => [
@@ -486,17 +498,18 @@ const LessonExtractor = () => {
                                 </div>
                             }
                             {content.map(({ id, docName, content }) => (
-                                <div key={id} className="mb-4 p-2">
+                                <div key={id + 1} className="mb-4 p-2">
                                     <h3 className="font-bold text-xl mb-2 ml-1 text-white">{docName}</h3>
-                                    <Editor initialContent={content} onChange={(content) => console.log(content)} />
-                                    {/* Spacer Line */}
+                                    <Editor
+                                        id={6}
+                                        initialContent={content}
+                                        onChange={(content) => console.log(content)}
+                                    />
                                     <hr className="border-t border-gray-400 my-4" />
                                 </div>
                             ))}
+
                         </div>
-
-
-
                     </div>
                 </div>
             }
