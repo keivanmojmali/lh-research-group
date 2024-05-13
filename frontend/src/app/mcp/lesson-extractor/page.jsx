@@ -243,7 +243,6 @@ const LessonExtractor = () => {
         // Handle error (e.g., display error message)
     };
 
-    console.log(content);
     return (
         <div className="h-screen flex flex-col">
             <div id='navbar'><Navbar navigation={navigation} setNavigation={setNavigation} /></div>
@@ -265,89 +264,97 @@ const LessonExtractor = () => {
                 </Disclosure>
             </div>
 
-            <div id='main-content' className="w-full px-2 sm:px-6 lg:px-8 flex-1 mt-6 flex overflow-hidden">
-                <ResizableBox
-                    width={700}
-                    height={Infinity}
-                    minConstraints={[200, 0]}
-                    maxConstraints={[600, Infinity]}
-                    axis="x"
-                >
-                    <div className="h-full w-full bg-black p-4 border-r border-gray-300 rounded-l-md overflow-auto">
-                        {selectedFile ? (
-                            <>
-                                <div className="flex items-center">
-                                    <button onClick={goBackToTree} className="mr-2">
-                                        <ChevronLeftIcon className="h-5 w-5" />
-                                    </button>
-                                    <h2 className="font-bold text-lg">{fileNameStripped}</h2>
-                                </div>
-                                <Document file={selectedFile} onLoadSuccess={onDocumentLoadSuccess} onError={onError}>
-                                    {renderPdfPages()}
-                                </Document>
-                            </>
-                        ) : (
-                            <>
-                                <h2 className="font-bold text-lg">Planner - Curriculum File Tree</h2>
-                                <Tree {...treeProps} />
-                            </>
-                        )}
-                    </div>
-                </ResizableBox>
+            {navigation[0].current &&
+                <div id='main-content' className="w-full px-2 sm:px-6 lg:px-8 flex-1 mt-6 flex overflow-hidden">
+                    <ResizableBox
+                        width={700}
+                        height={Infinity}
+                        minConstraints={[200, 0]}
+                        maxConstraints={[600, Infinity]}
+                        axis="x"
+                    >
+                        <div className="h-full w-full bg-black p-4 border-r border-gray-300 rounded-l-md overflow-auto">
+                            {selectedFile ? (
+                                <>
+                                    <div className="flex items-center">
+                                        <button onClick={goBackToTree} className="mr-2">
+                                            <ChevronLeftIcon className="h-5 w-5" />
+                                        </button>
+                                        <h2 className="font-bold text-xl mb-2 mt-2">{fileNameStripped}</h2>
+                                    </div>
+                                    <Document file={selectedFile} onLoadSuccess={onDocumentLoadSuccess} onError={onError}>
+                                        {renderPdfPages()}
+                                    </Document>
+                                </>
+                            ) : (
+                                <>
+                                    <h2 className="font-bold text-lg">Planner - Curriculum File Tree</h2>
+                                    <Tree {...treeProps} />
+                                </>
+                            )}
+                        </div>
+                    </ResizableBox>
 
-                {/* Right Column */}
-                <div className="flex-1 h-full bg-black p-4 border-l border-gray-300 rounded-r-md">
-                    {/* Top bar with buttons */}
-                    {selectedFile &&
-                        <>
-                            <div className="flex items-center justify-between mb-4">
-                                <div className='flex items-center'>
-                                    <h2 className="font-bold text-xl">Tools</h2>
-                                    {/* <h2 className="font-bold text-lg ml-2">|</h2> */}
-                                </div>
-                                <button
-                                    className="text-blue-700 flex items-center hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center  dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
-                                    aria-label="Download"
-                                >
-                                    Download
-                                    <ArrowDownTrayIcon className="h-5 w-5 ml-2" />
-                                </button>
-                            </div>
-                            <div className="flex items-center justify-between mb-4 border-t-2 border-b-2 pt-2 pb-2 overflow-x-auto">
-                                {buttons.map(button => (
+                    {/* Right Column */}
+                    <div className="flex-1 h-full bg-black p-4 border-l border-gray-300 rounded-r-md">
+                        {/* Top bar with buttons */}
+                        {selectedFile &&
+                            <>
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className='flex items-center'>
+                                        <h2 className="font-bold text-xl">Tools</h2>
+                                        {/* <h2 className="font-bold text-lg ml-2">|</h2> */}
+                                    </div>
                                     <button
-                                        key={button.id}
-                                        className="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-md px-5 py-2.5 text-center mr-2"
-                                        onClick={() => handleButtonClick(button.name)}
+                                        className="text-blue-700 flex items-center hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center  dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
+                                        aria-label="Download"
                                     >
-                                        {button.name}
+                                        Download
+                                        <ArrowDownTrayIcon className="h-5 w-5 ml-2" />
                                     </button>
-                                ))}
-                            </div>
-                        </>
-                    }
-                    {/* Scrollable Editors Section */}
-
-                    <div className="overflow-y-auto h-[calc(100%-6rem)]">
-                        {isLoading &&
-                            <div className="bg-white rounded-lg h-64 flex items-center justify-center shadow">
-                                <LoadingSpinner />
-                            </div>
+                                </div>
+                                <div className="flex items-center justify-between mb-4 border-t-2 border-b-2 pt-2 pb-2 overflow-x-auto">
+                                    {buttons.map(button => (
+                                        <button
+                                            key={button.id}
+                                            className="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-md px-5 py-2.5 text-center mr-2"
+                                            onClick={() => handleButtonClick(button.name)}
+                                        >
+                                            {button.name}
+                                        </button>
+                                    ))}
+                                </div>
+                            </>
                         }
-                        {content.map(({ id, docName, content }) => (
-                            <div key={id} className="mb-4 p-2">
-                                <h3 className="font-bold text-xl mb-2 ml-1 text-white">{docName}</h3>
-                                <Editor initialContent={content} onChange={(content) => console.log(content)} />
-                                {/* Spacer Line */}
-                                <hr className="border-t border-gray-400 my-4" />
-                            </div>
-                        ))}
+                        {/* Scrollable Editors Section */}
+
+                        <div className="overflow-y-auto h-[calc(100%-6rem)]">
+                            {isLoading &&
+                                <div className="bg-white rounded-lg h-64 flex items-center justify-center shadow">
+                                    <LoadingSpinner />
+                                </div>
+                            }
+                            {content.map(({ id, docName, content }) => (
+                                <div key={id} className="mb-4 p-2">
+                                    <h3 className="font-bold text-xl mb-2 ml-1 text-white">{docName}</h3>
+                                    <Editor initialContent={content} onChange={(content) => console.log(content)} />
+                                    {/* Spacer Line */}
+                                    <hr className="border-t border-gray-400 my-4" />
+                                </div>
+                            ))}
+                        </div>
+
+
+
                     </div>
-
-
-
                 </div>
-            </div>
+            }
+            {navigation[1].current &&  // Assuming "How-To" is the second item in your navigation array
+                <div id='main-content' className="w-full px-2 sm:px-6 lg:px-8 flex-1 mt-6 bg-white">
+                    <h1 className='bg-black'>hhh</h1>
+                </div>
+            }
+
         </div >
     );
 };
