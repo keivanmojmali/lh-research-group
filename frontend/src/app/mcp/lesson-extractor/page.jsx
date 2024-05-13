@@ -247,12 +247,12 @@ const LessonExtractor = () => {
     return (
         <div className="h-screen flex flex-col">
             <div id='navbar'><Navbar navigation={navigation} setNavigation={setNavigation} /></div>
-            <div id='banner'>
+            <div id='banner' className='bg-gray-800'>
                 <Disclosure>
                     {({ open }) => (
                         <>
                             {open && <HelloBanner />}
-                            <Disclosure.Button className="bg-gray-800 text-white w-full mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 py-2 flex items-center">
+                            <Disclosure.Button className="text-white w-full mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 py-2 flex items-center">
                                 <span className="font-bold">Directions</span>
                                 {open ? (
                                     <ChevronUpIcon className="ml-2 h-5 w-5" aria-hidden="true" />
