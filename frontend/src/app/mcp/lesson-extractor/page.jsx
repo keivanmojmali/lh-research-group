@@ -100,12 +100,32 @@ function Navbar({ navigation, setNavigation }) {
 
 const HelloBanner = () => {
     return (
-        <div className="bg-blue-600 text-white mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 py-6">
-            <h2 className="text-2xl font-bold">Hello!</h2>
-            <p className="mt-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        <div className="bg-gradient-to-r from-gray-700 via-gray-900 to-black text-white mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 rounded-lg shadow-lg">
+            <h2 className="text-3xl font-bold mb-4">Welcome to Lesson Extractor</h2>
+            <ul className="list-disc list-inside space-y-2">
+                <li>
+                    <strong>To get started</strong> - find your lesson on the left side from the curriculum.
+                </li>
+                <li>
+                    Then click into it, and the <strong>initial overview</strong> will load along with the tools.
+                </li>
+                <li>
+                    From there, you can <strong>create different resources</strong> using the toolbar that will load.
+                </li>
+                <li>
+                    You can <strong>edit the resources directly</strong> in the browser using the editor.
+                </li>
+                <li>
+                    Once you are done, you can <strong>download</strong> to PDF or Word.
+                </li>
+                <li>
+                    The pages will be separated - <strong>what you see is what you get</strong>.
+                </li>
+            </ul>
         </div>
     );
 };
+
 
 const HowToContent = () => {
     return (
