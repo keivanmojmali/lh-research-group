@@ -234,7 +234,7 @@ const LessonExtractor = () => {
                 {
                     id: uuidv4(),
                     content: content,
-                    docName: `${selectedFile.split('/').pop()} | ${editorName}`
+                    docName: `${selectedFile.replace(/^\/docs\//, '').replace(/\.pdf$/, '')} | ${editorName}`
                 },
                 ...prevContent,
             ]);
